@@ -15,3 +15,4 @@ Multi-purpose VexDB wrapper &amp; scout assistant
 - Tournament Mode and Database Mode
 - Tournament Mode displays all relevant information to a tournament, select it using switch in options
 - Database Mode displays all information in a nice list
+- OSS once first stable release is published
