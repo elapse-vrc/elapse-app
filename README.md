@@ -1,5 +1,5 @@
 # elapse
-Multi-purpose VexDB wrapper &amp; scout assistant
+Multi-purpose VexDB wrapper &amp; scout assistant, written in Flutter
 
 ## Uses:
 - Scouting
