@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:elapse/game.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -13,23 +14,40 @@ class GameList extends StatefulWidget {
 
 class _GameListState extends State<GameList> {
 
-  List<String> quotes = [
-    'Be yourself; everyone else is already taken',
-    'I have nothing to declare except my genius',
-    'The truth is rarely pure and never simple'
-  ];
+  Future<Tournament> futureTournament;
+
+  @override
+  void initState() {
+    super.initState();
+    futureTournament = fetchTournament();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[200],
-      appBar: AppBar(
-        title: Text('Quotes'),
-        centerTitle: true,
-        backgroundColor: Colors.redAccent,
+    return MaterialApp(
+      title: 'Fetch Data Example',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
-      body: Column(
-        children: quotes.map((quote) => Text(quote)).toList(),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('fetching data'),
+        ),
+        body: Center(
+          child: FutureBuilder<Tournament>(
+            future: futureTournament,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Text(snapshot.data.locPostal);
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+
+              // By default, show a loading spinner.
+              return CircularProgressIndicator();
+            },
+          ),
+        ),
       ),
     );
   }
