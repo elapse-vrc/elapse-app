@@ -13,3 +13,6 @@ Multi-purpose VexDB wrapper &amp; scout assistant, written in Flutter
 - Aestheically pleasing UI
 - Team "accounts" for displaying all team information in a tournament
 - OSS once first stable release is published
+
+## Trello
+We use trello to keep track of our tasks and projects. View the board (here)[https://trello.com/b/Hb50fRnb]
