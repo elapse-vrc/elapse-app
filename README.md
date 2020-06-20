@@ -16,3 +16,6 @@ Multi-purpose VexDB wrapper &amp; scout assistant, written in Flutter
 
 ## Trello
 We use trello to keep track of our tasks and projects. View the board [here](https://trello.com/b/Hb50fRnb)
+
+## Discord
+Join our [discord](https://discord.gg/7XFQYYp)!
