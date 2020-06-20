@@ -14,21 +14,30 @@ class GameList extends StatefulWidget {
 class _GameListState extends State<GameList> {
   Future<Tournament> futureTournament;
 
-  matchType(game) {
+  matchType(game) { //gets the type of match
     if (game['round'] == 2) {
-      return 'Q';
+      return 'Q ';
     }
     else if (game['round'] == 6) {
-      return 'R';
+      return 'R ';
     }
     else if (game['round'] == 3) {
-      return 'QF';
+      return 'QF ';
     }
     else if (game['round'] == 4) {
-      return 'SF';
+      return 'SF ';
     }
     else if (game['round'] == 5) {
-      return 'F';
+      return 'F ';
+    }
+  }
+
+  instanceModifier(game) { //removes .1 if type is Q
+    if (game['round'] == 2) {
+      return '';
+    }
+    else {
+      return game['instance'].toString()+'.';
     }
   }
 
@@ -48,12 +57,12 @@ class _GameListState extends State<GameList> {
           DefaultTextStyle(
             child: Row(
               children: <Widget>[
-                Text(matchType(game)),
+                Text(matchType(game), style: TextStyle(fontSize: 16)),
                 Container(
-                  width: 40,
-                  child: Text(game['matchnum'].toString()+'.'+game['instance'].toString()),
+                  width: 70,
+                  child: Text(instanceModifier(game)+game['matchnum'].toString(), style: TextStyle(fontSize: 25)),
                 ),
-                Spacer(flex: 1),
+                Spacer(flex: 3),
                 Container(
                   width: 60,
                   child: DefaultTextStyle(
