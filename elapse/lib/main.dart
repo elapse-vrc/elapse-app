@@ -137,29 +137,38 @@ class _GameListState extends State<GameList> {
       ),
       home: Scaffold(
         backgroundColor: const Color.fromARGB(255, 235, 240, 239),
-        appBar: AppBar(
-          title: Text('fetching data'),
-        ),
-        body: Center(
-          child: FutureBuilder<Tournament>(
-            future: futureTournament,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                //print(snapshot.data.matches[0]['division']);
-                return ListView(
-                  children: snapshot.data.matches
-                      .map((match) => gameTemplate(match))
-                      .toList(),
-                );
-              } else if (snapshot.hasError) {
-                print('error');
-                return Text("${snapshot.error}");
-              }
-              print('loading');
-              // By default, show a loading spinner.
-              return CircularProgressIndicator();
-            },
-          ),
+        body: CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar (
+                expandedHeight: 150.0,
+                flexibleSpace: const FlexibleSpaceBar(
+                  title: Text('Matches'),
+                ),
+            ),
+            SliverFillRemaining(
+              child: Center(
+                  child: FutureBuilder<Tournament>(
+                    future: futureTournament,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        //print(snapshot.data.matches[0]['division']);
+                        return ListView(
+                          children: snapshot.data.matches
+                              .map((match) => gameTemplate(match))
+                              .toList(),
+                        );
+                      } else if (snapshot.hasError) {
+                        print('error');
+                        return Text("${snapshot.error}");
+                      }
+                      print('loading');
+                      // By default, show a loading spinner.
+                      return CircularProgressIndicator();
+                    },
+                  ),
+                ),
+              ),
+          ]
         ),
       ),
     );
