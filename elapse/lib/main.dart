@@ -3,9 +3,7 @@ import 'package:elapse/game.dart';
 import 'dart:developer';
 
 void main() {
-  runApp(MaterialApp(
-    home: GameList()
-  ));
+  runApp(MaterialApp(home: GameList()));
 }
 
 class GameList extends StatefulWidget {
@@ -14,65 +12,90 @@ class GameList extends StatefulWidget {
 }
 
 class _GameListState extends State<GameList> {
-
   Future<Tournament> futureTournament;
+
+  matchType(game) {
+    if (game['round'] == 2) {
+      return 'Q.';
+    }
+    else if (game['round'] == 6) {
+      return 'R16.';
+    }
+    else if (game['round'] == 3) {
+      return 'QF.';
+    }
+    else if (game['round'] == 4) {
+      return 'SF.';
+    }
+    else if (game['round'] == 5) {
+      return 'F.';
+    }
+  }
 
   Widget gameTemplate(game) {
     return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            const Divider(
-              color: const Color(0xE6E6E6FF),
-              height: 20,
-              thickness: 1,
-              indent: 20,
-              endIndent: 20,
-            ),
-            DefaultTextStyle(
-              child: Row(
-                children: <Widget>[
-                  Text('Q'),
-                  Container(
-                    width: 40,
-                    child: Text(game['matchnum'].toString()),
+      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          const Divider(
+            color: const Color(0xE6E6E6FF),
+            height: 20,
+            thickness: 1,
+            indent: 20,
+            endIndent: 20,
+          ),
+          DefaultTextStyle(
+            child: Row(
+              children: <Widget>[
+                Text(matchType(game)),
+                Container(
+                  width: 40,
+                  child: Text(game['matchnum'].toString()),
+                ),
+                Spacer(flex: 1),
+                Container(
+                  width: 60,
+                  child: DefaultTextStyle(
+                    style: TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.w300),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        Text(game['red1'], textAlign: TextAlign.left),
+                        Text(game['red2'], textAlign: TextAlign.left),
+                      ],
+                    ),
                   ),
-                  Spacer(flex: 1),
-                  Container(
+                ),
+                Container(
+                  width: 25,
+                  child: Text(
+                    game['redscore'].toString(),
+                    style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 20,
+                        fontWeight: FontWeight.normal),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+                Spacer(flex: 1),
+                Container(
+                  width: 25,
+                  child: Text(
+                    game['bluescore'].toString(),
+                    style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 20,
+                        fontWeight: FontWeight.normal),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                Container(
                     width: 60,
                     child: DefaultTextStyle(
-                      style: TextStyle(color: Colors.red, fontWeight: FontWeight.w300),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          Text(game['red1'], textAlign: TextAlign.left),
-                          Text(game['red2'], textAlign: TextAlign.left),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 25,
-                    child: Text(
-                        game['redscore'].toString(),
-                      style: TextStyle(color: Colors.red, fontSize: 20, fontWeight: FontWeight.normal),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  Spacer(flex: 1),
-                  Container(
-                    width: 25,
-                    child: Text(
-                        game['bluescore'].toString(),
-                      style: TextStyle(color: Colors.blue, fontSize: 20, fontWeight: FontWeight.normal),
-                      textAlign: TextAlign.right,
-                    ),
-                  ),
-                  Container(
-                    width: 60,
-                    child: DefaultTextStyle(
-                      style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w300),
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.w300),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
@@ -80,14 +103,13 @@ class _GameListState extends State<GameList> {
                           Text(game['blue2'], textAlign: TextAlign.right),
                         ],
                       ),
-                  )
-                  )
-                ],
-              ),
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300),
-            )
-          ],
-        ),
+                    ))
+              ],
+            ),
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300),
+          )
+        ],
+      ),
     );
   }
 
@@ -116,7 +138,9 @@ class _GameListState extends State<GameList> {
               if (snapshot.hasData) {
                 //print(snapshot.data.matches[0]['division']);
                 return ListView(
-                  children: snapshot.data.matches.map((match) => gameTemplate(match)).toList(),
+                  children: snapshot.data.matches
+                      .map((match) => gameTemplate(match))
+                      .toList(),
                 );
               } else if (snapshot.hasError) {
                 print('error');
