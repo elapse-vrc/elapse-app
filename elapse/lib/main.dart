@@ -16,19 +16,19 @@ class _GameListState extends State<GameList> {
 
   matchType(game) {
     if (game['round'] == 2) {
-      return 'Q.';
+      return 'Q';
     }
     else if (game['round'] == 6) {
-      return 'R16.';
+      return 'R';
     }
     else if (game['round'] == 3) {
-      return 'QF.';
+      return 'QF';
     }
     else if (game['round'] == 4) {
-      return 'SF.';
+      return 'SF';
     }
     else if (game['round'] == 5) {
-      return 'F.';
+      return 'F';
     }
   }
 
@@ -51,7 +51,7 @@ class _GameListState extends State<GameList> {
                 Text(matchType(game)),
                 Container(
                   width: 40,
-                  child: Text(game['matchnum'].toString()),
+                  child: Text(game['matchnum'].toString()+'.'+game['instance'].toString()),
                 ),
                 Spacer(flex: 1),
                 Container(
