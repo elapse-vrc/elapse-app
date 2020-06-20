@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:elapse/game.dart';
 import 'dart:developer';
@@ -41,19 +42,28 @@ class _GameListState extends State<GameList> {
     }
   }
 
+  Widget matchDivider(game) { // Removes divider if it's the first match
+    if (game['matchnum'] == 1 && game['round'] == 2) {
+      return Container(color: const Color.fromARGB(255, 235, 240, 239), height: 15,);
+    }
+    else {
+      return Divider(
+        color: const Color(0xE6E6E6FF),
+        height: 20,
+        thickness: 1,
+        indent: 20,
+        endIndent: 20,
+      );
+    }
+  }
+
   Widget gameTemplate(game) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          const Divider(
-            color: const Color(0xE6E6E6FF),
-            height: 20,
-            thickness: 1,
-            indent: 20,
-            endIndent: 20,
-          ),
+          matchDivider(game),
           DefaultTextStyle(
             child: Row(
               children: <Widget>[
@@ -78,7 +88,7 @@ class _GameListState extends State<GameList> {
                   ),
                 ),
                 Container(
-                  width: 25,
+                  width: 35,
                   child: Text(
                     game['redscore'].toString(),
                     style: TextStyle(
@@ -90,7 +100,7 @@ class _GameListState extends State<GameList> {
                 ),
                 Spacer(flex: 1),
                 Container(
-                  width: 25,
+                  width: 35,
                   child: Text(
                     game['bluescore'].toString(),
                     style: TextStyle(
@@ -129,36 +139,60 @@ class _GameListState extends State<GameList> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { // https://stackoverflow.com/questions/52146850/how-to-use-futurebuilder-inside-sliverlist
+    final appBarSliver = SliverAppBar (
+      backgroundColor: const Color.fromARGB(255, 235, 240, 239),
+      expandedHeight: 150.0,
+      flexibleSpace: const FlexibleSpaceBar(
+        title: Text('Matches', textAlign: TextAlign.left, style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300),),
+        titlePadding: EdgeInsetsDirectional.only(start: 20, bottom: 16),
+      ),
+      floating: true,
+      pinned: true,
+    );
+
     return MaterialApp(
-      title: 'Fetch Data Example',
+      debugShowCheckedModeBanner: false,
+      title: 'Match Screen',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 235, 240, 239),
-        appBar: AppBar(
-          title: Text('fetching data'),
-        ),
-        body: Center(
-          child: FutureBuilder<Tournament>(
-            future: futureTournament,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                //print(snapshot.data.matches[0]['division']);
-                return ListView(
-                  children: snapshot.data.matches
-                      .map((match) => gameTemplate(match))
-                      .toList(),
+      home: Container(
+        color: const Color.fromARGB(255, 235, 240, 239),
+        child: SafeArea(
+          child: Scaffold(
+            backgroundColor: const Color.fromARGB(255, 235, 240, 239),
+            body: FutureBuilder<Tournament>(
+              future: futureTournament,
+              builder: (context, snapshot) {
+                Widget matchListSliver;
+                if (snapshot.hasData) {
+                  //print(snapshot.data.matches[0]['division']);
+                  matchListSliver = SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                        return gameTemplate(snapshot.data.matches[index]);
+                      },
+                        childCount: snapshot.data.matches.length,
+                    )
+                  );
+                } else if (snapshot.hasError) {
+                  print('error');
+                  return Text("${snapshot.error}");
+                } else {
+                  print('loading');
+                  // By default, show a loading spinner.
+                  matchListSliver =
+                      SliverFillRemaining(child: Center(child: Container(child: CircularProgressIndicator()),));
+                }
+                return CustomScrollView(
+                  slivers: <Widget>[
+                    appBarSliver,
+                    matchListSliver
+                  ],
                 );
-              } else if (snapshot.hasError) {
-                print('error');
-                return Text("${snapshot.error}");
-              }
-              print('loading');
-              // By default, show a loading spinner.
-              return CircularProgressIndicator();
-            },
+              },
+            ),
           ),
         ),
       ),
