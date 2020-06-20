@@ -1,22 +1,45 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
+import 'dart:developer';
 
-Future<Tournament> fetchTournament() async {
+Future<Tournament> fetchTournament(String sku) async {
   final response =
-  await http.get('https://api.vexdb.io/v1/get_events?sku=RE-VRC-19-8481');
+  await http.get('https://api.vexdb.io/v1/get_events?sku=$sku');
+
+  final matchResponse =
+  await http.get('https://api.vexdb.io/v1/get_matches?sku=$sku');
+
+  List<dynamic> tempMatchList;
+  List<Map<String, dynamic>> matchList = [];
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    return Tournament.fromJson(json.decode(response.body));
+
+    Map<String, dynamic> matchRawJson = json.decode(matchResponse.body);
+    print(matchRawJson['result']);
+    tempMatchList = matchRawJson['result'];
+    
+    for (int i = 0; i < matchRawJson['size']; i += 1){
+
+      print(tempMatchList[0]);
+      matchList.add(tempMatchList[i]);
+
+    }
+
+
+    log('internal match list made');
+    return Tournament.fromJson(json.decode(response.body), matchList);
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
+    log('test');
     throw Exception('Failed to load JSON file. Perhaps you have no internet connection?');
   }
 }
 
+// Serialize Tournament data into a readable object format
 class Tournament {
   const Tournament({
     this.sku,
@@ -50,10 +73,10 @@ class Tournament {
   final String season;
   final String start;
   final String end;
-  final List<Match> matches;
+  final List<Map<String, dynamic>> matches;
 
 
-  factory Tournament.fromJson(Map<String, dynamic> json) {
+  factory Tournament.fromJson(Map<String, dynamic> json, List<Map<String, dynamic>> matchList) {
     if (json == null || json['status'] != 1) {
       throw FormatException("Error fetching data from VexDB. Perhaps you mistyped?");
     }
@@ -72,30 +95,8 @@ class Tournament {
       locCountry: json['loc_country'],
       season: json['season'],
       start: json['start'],
-      end: json['end']
+      end: json['end'],
+      matches: matchList
     );
   }
-}
-
-class Match {
-  String sku;
-  String division;
-  int round;
-  int instance;
-  int matchNum;
-  String field;
-  String red1;
-  String red2;
-  String red3;
-  String redSit;
-  String blue1;
-  String blue2;
-  String blue3;
-  String blueSit;
-  int redScore;
-  int blueScore;
-  int scored;
-  String scheduled;
-
-  Match({ this.sku });
 }
