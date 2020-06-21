@@ -8,6 +8,7 @@ import 'dart:developer';
 
 void main() => runApp(MyApp());
 
+
 class MyApp extends StatelessWidget {
   static const String _title = 'Flutter Code Sample';
 
@@ -35,7 +36,7 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
