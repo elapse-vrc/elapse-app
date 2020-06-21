@@ -67,6 +67,9 @@ flutter:
        - asset: include/fonts/roboto/Roboto-Regular.ttf
        - asset: include/fonts/roboto/Roboto-Light.ttf
          weight: 300
+   - family: ElapseIcons
+     fonts:
+       - asset: include/drawable/icon/ElapseIcons.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

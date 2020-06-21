@@ -45,7 +45,7 @@ class _GameListState extends State<GameList> {
 
   Widget matchDivider(game) { // Removes divider if it's the first match
     if (game['matchnum'] == 1 && game['round'] == 2) {
-      return Container(color: const Color.fromARGB(255, 235, 240, 239), height: 15,);
+      return Container(color: const Color.fromARGB(255, 245, 250, 249), height: 15,);
     }
     else {
       return Divider(
@@ -142,7 +142,7 @@ class _GameListState extends State<GameList> {
   @override
   Widget build(BuildContext context) { // https://stackoverflow.com/questions/52146850/how-to-use-futurebuilder-inside-sliverlist
     final appBarSliver = SliverAppBar (
-      backgroundColor: const Color.fromARGB(255, 235, 240, 239),
+      backgroundColor: const Color.fromARGB(255, 245, 250, 249),
       expandedHeight: 150.0,
       flexibleSpace: const FlexibleSpaceBar(
         title: Text('Matches', textAlign: TextAlign.left, style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300),),
@@ -150,6 +150,8 @@ class _GameListState extends State<GameList> {
       ),
       floating: false,
       pinned: true,
+      elevation: 8,
+
     );
 
     return MaterialApp(
@@ -159,10 +161,10 @@ class _GameListState extends State<GameList> {
         primarySwatch: Colors.blue,
       ),
       home: Container(
-        color: const Color.fromARGB(255, 235, 240, 239),
+        color: const Color.fromARGB(255, 245, 250, 249),
         child: SafeArea(
           child: Scaffold(
-            backgroundColor: const Color.fromARGB(255, 235, 240, 239),
+            backgroundColor: const Color.fromARGB(255, 245, 250, 249),
             body: FutureBuilder<Tournament>(
               future: futureTournament,
               builder: (context, snapshot) {

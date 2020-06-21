@@ -1,10 +1,10 @@
+import 'package:elapse/elapse_icons_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:elapse/pages/matches.dart';
 import 'package:elapse/pages/home.dart';
 import 'package:elapse/pages/settings.dart';
 import 'package:flutter/services.dart';
-import 'dart:developer';
 
 void main() => runApp(MyApp());
 
@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
       value: SystemUiOverlayStyle(
         systemNavigationBarColor: Colors.white,
         systemNavigationBarIconBrightness: Brightness.dark,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
       ),
       child: MaterialApp(
@@ -57,19 +58,22 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
+
+        showSelectedLabels: true,
+        showUnselectedLabels: false,
         //temporary icons used below
 
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.videogame_asset),
+            icon: Icon(ElapseIcons.matches),
             title: Text('Matches'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(ElapseIcons.home),
             title: Text('Home'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: Icon(ElapseIcons.settings),
             title: Text('Configure'),
           ),
         ],
@@ -77,6 +81,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         selectedItemColor: Colors.grey[850],
         onTap: _onItemTapped,
         backgroundColor: Colors.white,
+        elevation: 20,
       ),
     );
   }

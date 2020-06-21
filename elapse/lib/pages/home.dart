@@ -1,3 +1,4 @@
+import 'package:elapse/elapse_icons_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,7 @@ class HomePage extends StatelessWidget {
         title: Text("Home"),
       ),
       body: Center(
-        child: Text('Elapse Home Screen Goes Here'),
+        child: Icon(ElapseIcons.home, size: 200,)
       ),
     );
   }
