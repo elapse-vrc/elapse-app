@@ -40,6 +40,64 @@ class _GameListState extends State<GameList> {
     }
   }
 
+  Widget mainDataModifier(game) {
+    //Changes the score to show field and time if match hasnt been played yet
+    if (game['redscore'] == 0 && game['bluescore'] == 0) {
+      return Row(children: <Widget>[
+        Container(
+          width: 80,
+          child: Text(
+            game['field'],
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+            textAlign: TextAlign.left,
+          ),
+        ),
+        Spacer(flex: 1),
+        Container(
+          width: 45,
+          child: Text(
+            game['scheduled'].toString().substring(11, 16),
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+            textAlign: TextAlign.right,
+          ),
+        ),
+      ]);
+    } else {
+      return Row(children: <Widget>[
+        Container(
+          width: 35,
+          child: Text(
+            game['redscore'].toString(),
+            style: TextStyle(
+                color: Colors.red, fontSize: 20, fontWeight: FontWeight.normal),
+            textAlign: TextAlign.left,
+          ),
+        ),
+        Spacer(flex: 1),
+        Container(
+          width: 35,
+          child: Text(
+            game['bluescore'].toString(),
+            style: TextStyle(
+                color: Colors.blue,
+                fontSize: 20,
+                fontWeight: FontWeight.normal),
+            textAlign: TextAlign.right,
+          ),
+        ),
+      ]);
+    }
+  }
+
+  sizeChanger(game) {
+    //changes size for the list if match not played
+    if (game['redscore'] == 0 && game['bluescore'] == 0) {
+      return 130.0;
+    } else {
+      return 80.0;
+    }
+  }
+
   Widget matchDivider(game) {
     // Removes divider if it's the first match
     if (game['matchnum'] == 1 && game['round'] == 2) {
@@ -94,27 +152,8 @@ class _GameListState extends State<GameList> {
                   ),
                 ),
                 Container(
-                  width: 35,
-                  child: Text(
-                    game['redscore'].toString(),
-                    style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 20,
-                        fontWeight: FontWeight.normal),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-                Spacer(flex: 1),
-                Container(
-                  width: 35,
-                  child: Text(
-                    game['bluescore'].toString(),
-                    style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 20,
-                        fontWeight: FontWeight.normal),
-                    textAlign: TextAlign.right,
-                  ),
+                  width: sizeChanger(game),
+                  child: mainDataModifier(game),
                 ),
                 Container(
                     width: 60,
@@ -173,39 +212,39 @@ class _GameListState extends State<GameList> {
         color: const Color.fromARGB(255, 245, 250, 249),
         child: SafeArea(
           child: Scaffold(
-              backgroundColor: const Color.fromARGB(255, 245, 250, 249),
-              body: FutureBuilder<Tournament>(
-                future: futureTournament,
-                builder: (context, snapshot) {
-                  Widget matchListSliver;
-                  if (snapshot.hasData) {
-                    //print(snapshot.data.matches[0]['division']);
-                    matchListSliver = SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) {
-                        return gameTemplate(snapshot.data.matches[index]);
-                      },
-                      childCount: snapshot.data.matches.length,
-                    ));
-                  } else if (snapshot.hasError) {
-                    print('error');
-                    return Text("${snapshot.error}");
-                  } else {
-                    print('loading');
-                    // By default, show a loading spinner.
-                    matchListSliver = SliverFillRemaining(
-                        child: Center(
-                      child: Container(child: CircularProgressIndicator()),
-                    ));
-                  }
-                  return RefreshIndicator(
-                    child: CustomScrollView(
-                      slivers: <Widget>[appBarSliver, matchListSliver],
-                    ),
-                    onRefresh: _getData,
-                  );
-                },
-              ),
+            backgroundColor: const Color.fromARGB(255, 245, 250, 249),
+            body: FutureBuilder<Tournament>(
+              future: futureTournament,
+              builder: (context, snapshot) {
+                Widget matchListSliver;
+                if (snapshot.hasData) {
+                  //print(snapshot.data.matches[0]['division']);
+                  matchListSliver = SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      return gameTemplate(snapshot.data.matches[index]);
+                    },
+                    childCount: snapshot.data.matches.length,
+                  ));
+                } else if (snapshot.hasError) {
+                  print('error');
+                  return Text("${snapshot.error}");
+                } else {
+                  print('loading');
+                  // By default, show a loading spinner.
+                  matchListSliver = SliverFillRemaining(
+                      child: Center(
+                    child: Container(child: CircularProgressIndicator()),
+                  ));
+                }
+                return RefreshIndicator(
+                  child: CustomScrollView(
+                    slivers: <Widget>[appBarSliver, matchListSliver],
+                  ),
+                  onRefresh: _getData,
+                );
+              },
+            ),
           ),
         ),
       ),
