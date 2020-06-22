@@ -5,10 +5,10 @@ import 'dart:developer';
 
 Future<Tournament> fetchTournament(String sku) async {
   final response =
-  await http.get('https://raw.githubusercontent.com/elapse-vrc/testdata/master/data.json');
+  await http.get('https://api.vexdb.io/v1/get_events?sku=$sku');
 
   final matchResponse =
-  await http.get('https://raw.githubusercontent.com/elapse-vrc/testdata/master/data.json');
+  await http.get('https://api.vexdb.io/v1/get_matches?sku=$sku');
 
   List<dynamic> tempMatchList;
   List<Map<String, dynamic>> matchList = [];

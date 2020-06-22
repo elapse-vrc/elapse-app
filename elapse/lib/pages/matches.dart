@@ -16,9 +16,6 @@ class GameList extends StatefulWidget {
 class _GameListState extends State<GameList> {
   Future<Tournament> futureTournament;
 
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      new GlobalKey<RefreshIndicatorState>();
-
   matchType(game) {
     //gets the type of match
     if (game['round'] == 2) {
@@ -176,39 +173,39 @@ class _GameListState extends State<GameList> {
         color: const Color.fromARGB(255, 245, 250, 249),
         child: SafeArea(
           child: Scaffold(
-            backgroundColor: const Color.fromARGB(255, 245, 250, 249),
-            body: FutureBuilder<Tournament>(
-              future: futureTournament,
-              builder: (context, snapshot) {
-                Widget matchListSliver;
-                if (snapshot.hasData) {
-                  //print(snapshot.data.matches[0]['division']);
-                  matchListSliver = SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      return gameTemplate(snapshot.data.matches[index]);
-                    },
-                    childCount: snapshot.data.matches.length,
-                  ));
-                } else if (snapshot.hasError) {
-                  print('error');
-                  return Text("${snapshot.error}");
-                } else {
-                  print('loading');
-                  // By default, show a loading spinner.
-                  matchListSliver = SliverFillRemaining(
-                      child: Center(
-                    child: Container(child: CircularProgressIndicator()),
-                  ));
-                }
-                return RefreshIndicator(
-                  child: CustomScrollView(
-                    slivers: <Widget>[appBarSliver, matchListSliver],
-                  ),
-                  onRefresh: _getData,
-                );
-              },
-            ),
+              backgroundColor: const Color.fromARGB(255, 245, 250, 249),
+              body: FutureBuilder<Tournament>(
+                future: futureTournament,
+                builder: (context, snapshot) {
+                  Widget matchListSliver;
+                  if (snapshot.hasData) {
+                    //print(snapshot.data.matches[0]['division']);
+                    matchListSliver = SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                        return gameTemplate(snapshot.data.matches[index]);
+                      },
+                      childCount: snapshot.data.matches.length,
+                    ));
+                  } else if (snapshot.hasError) {
+                    print('error');
+                    return Text("${snapshot.error}");
+                  } else {
+                    print('loading');
+                    // By default, show a loading spinner.
+                    matchListSliver = SliverFillRemaining(
+                        child: Center(
+                      child: Container(child: CircularProgressIndicator()),
+                    ));
+                  }
+                  return RefreshIndicator(
+                    child: CustomScrollView(
+                      slivers: <Widget>[appBarSliver, matchListSliver],
+                    ),
+                    onRefresh: _getData,
+                  );
+                },
+              ),
           ),
         ),
       ),
@@ -217,7 +214,11 @@ class _GameListState extends State<GameList> {
 
   Future<void> _getData() async {
     setState(() {
-      fetchTournament('RE-VRC-19-8481');
+      futureTournament = fetchTournament('RE-VRC-19-8481');
+
+      //show a snackbar to show that loading new matches is complete
+      final reloadSnackBar = SnackBar(content: Text('Refreshed matches list'));
+      Scaffold.of(context).showSnackBar(reloadSnackBar);
     });
   }
 }
