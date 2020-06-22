@@ -16,38 +16,41 @@ class GameList extends StatefulWidget {
 class _GameListState extends State<GameList> {
   Future<Tournament> futureTournament;
 
-  matchType(game) { //gets the type of match
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      new GlobalKey<RefreshIndicatorState>();
+
+  matchType(game) {
+    //gets the type of match
     if (game['round'] == 2) {
       return 'Q ';
-    }
-    else if (game['round'] == 6) {
+    } else if (game['round'] == 6) {
       return 'R ';
-    }
-    else if (game['round'] == 3) {
+    } else if (game['round'] == 3) {
       return 'QF ';
-    }
-    else if (game['round'] == 4) {
+    } else if (game['round'] == 4) {
       return 'SF ';
-    }
-    else if (game['round'] == 5) {
+    } else if (game['round'] == 5) {
       return 'F ';
     }
   }
 
-  instanceModifier(game) { //removes .1 if type is Q
+  instanceModifier(game) {
+    //removes .1 if type is Q
     if (game['round'] == 2) {
       return '';
-    }
-    else {
-      return game['instance'].toString()+'.';
+    } else {
+      return game['instance'].toString() + '.';
     }
   }
 
-  Widget matchDivider(game) { // Removes divider if it's the first match
+  Widget matchDivider(game) {
+    // Removes divider if it's the first match
     if (game['matchnum'] == 1 && game['round'] == 2) {
-      return Container(color: const Color.fromARGB(255, 245, 250, 249), height: 15,);
-    }
-    else {
+      return Container(
+        color: const Color.fromARGB(255, 245, 250, 249),
+        height: 15,
+      );
+    } else {
       return Divider(
         color: const Color(0xE6E6E6FF),
         height: 20,
@@ -68,10 +71,15 @@ class _GameListState extends State<GameList> {
           DefaultTextStyle(
             child: Row(
               children: <Widget>[
-                Text(matchType(game), style: TextStyle(fontSize: 16)),
+                Container(
+                  width: 25,
+                  child: Text(matchType(game), style: TextStyle(fontSize: 16)),
+                ),
                 Container(
                   width: 70,
-                  child: Text(instanceModifier(game)+game['matchnum'].toString(), style: TextStyle(fontSize: 25)),
+                  child: Text(
+                      instanceModifier(game) + game['matchnum'].toString(),
+                      style: TextStyle(fontSize: 25)),
                 ),
                 Spacer(flex: 3),
                 Container(
@@ -140,18 +148,22 @@ class _GameListState extends State<GameList> {
   }
 
   @override
-  Widget build(BuildContext context) { // https://stackoverflow.com/questions/52146850/how-to-use-futurebuilder-inside-sliverlist
-    final appBarSliver = SliverAppBar (
+  Widget build(BuildContext context) {
+    // https://stackoverflow.com/questions/52146850/how-to-use-futurebuilder-inside-sliverlist
+    final appBarSliver = SliverAppBar(
       backgroundColor: const Color.fromARGB(255, 245, 250, 249),
       expandedHeight: 150.0,
       flexibleSpace: const FlexibleSpaceBar(
-        title: Text('Matches', textAlign: TextAlign.left, style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300),),
+        title: Text(
+          'Matches',
+          textAlign: TextAlign.left,
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300),
+        ),
         titlePadding: EdgeInsetsDirectional.only(start: 20, bottom: 16),
       ),
       floating: false,
       pinned: true,
       elevation: 8,
-
     );
 
     return MaterialApp(
@@ -173,26 +185,27 @@ class _GameListState extends State<GameList> {
                   //print(snapshot.data.matches[0]['division']);
                   matchListSliver = SliverList(
                       delegate: SliverChildBuilderDelegate(
-                            (BuildContext context, int index) {
-                          return gameTemplate(snapshot.data.matches[index]);
-                        },
-                        childCount: snapshot.data.matches.length,
-                      )
-                  );
+                    (BuildContext context, int index) {
+                      return gameTemplate(snapshot.data.matches[index]);
+                    },
+                    childCount: snapshot.data.matches.length,
+                  ));
                 } else if (snapshot.hasError) {
                   print('error');
                   return Text("${snapshot.error}");
                 } else {
                   print('loading');
                   // By default, show a loading spinner.
-                  matchListSliver =
-                      SliverFillRemaining(child: Center(child: Container(child: CircularProgressIndicator()),));
+                  matchListSliver = SliverFillRemaining(
+                      child: Center(
+                    child: Container(child: CircularProgressIndicator()),
+                  ));
                 }
-                return CustomScrollView(
-                  slivers: <Widget>[
-                    appBarSliver,
-                    matchListSliver
-                  ],
+                return RefreshIndicator(
+                  child: CustomScrollView(
+                    slivers: <Widget>[appBarSliver, matchListSliver],
+                  ),
+                  onRefresh: _getData,
                 );
               },
             ),
@@ -200,5 +213,11 @@ class _GameListState extends State<GameList> {
         ),
       ),
     );
+  }
+
+  Future<void> _getData() async {
+    setState(() {
+      fetchTournament('RE-VRC-19-8481');
+    });
   }
 }
