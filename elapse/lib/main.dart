@@ -81,7 +81,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.grey[850],
         onTap: _onItemTapped,
-        backgroundColor: Colors.white,
+        backgroundColor: const Color.fromARGB(255, 250, 255, 254),
         elevation: 20,
       ),
     );
