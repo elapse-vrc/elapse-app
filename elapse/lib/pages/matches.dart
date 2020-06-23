@@ -45,11 +45,13 @@ class _GameListState extends State<GameList> {
     if (game['redscore'] == 0 && game['bluescore'] == 0) {
       return Row(children: <Widget>[
         Container(
-          width: 80,
+          width: 60,
           child: Text(
             game['field'],
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
             textAlign: TextAlign.left,
+            overflow: TextOverflow.fade,
+            softWrap: false,
           ),
         ),
         Spacer(flex: 1),
@@ -92,7 +94,7 @@ class _GameListState extends State<GameList> {
   sizeChanger(game) {
     //changes size for the list if match not played
     if (game['redscore'] == 0 && game['bluescore'] == 0) {
-      return 130.0;
+      return 110.0;
     } else {
       return 80.0;
     }
