@@ -61,23 +61,22 @@ Future<List<Match>> fetchMatches(String sku) async {
   await http.get('https://api.vexdb.io/v1/get_matches?sku=$sku');
   Map<String, dynamic> matchRawJson = json.decode(matchResponse.body);
 
-  print(matchRawJson);
-
   List<dynamic> tempMatchList;
   List<Match> matchList = [];
 
   if (matchResponse.statusCode == 200) {
-    print(matchRawJson['result']);
     tempMatchList = matchRawJson['result'];
 
-    for (int i = 0; i < matchRawJson.length; i += 1) {
+    for (int i = 0; i < matchRawJson['size']; i += 1) {
+      //print(tempMatchList[i]);
       matchList.add(Match.fromJson(tempMatchList[i]));
     }
+    //print(matchList);
     return (matchList);
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    log('test');
+    //log('test');
     throw Exception('Failed to load JSON file. Perhaps you have no internet connection?');
   }
 }
@@ -183,7 +182,7 @@ class Match {
   final String scheduled;
 
   factory Match.fromJson(Map<String, dynamic> json) {
-    if (json == null || json['status'] != 1) {
+    if (json == null) {
       throw FormatException("Error fetching data from VexDB. Perhaps you mistyped?");
     }
 

@@ -18,36 +18,36 @@ class _GameListState extends State<GameList> {
 
   matchType(game) {
     //gets the type of match
-    if (game['round'] == 2) {
-      return 'Q ';
-    } else if (game['round'] == 6) {
-      return 'R ';
-    } else if (game['round'] == 3) {
-      return 'QF ';
-    } else if (game['round'] == 4) {
-      return 'SF ';
-    } else if (game['round'] == 5) {
-      return 'F ';
+    if (game.round == 2) {
+      return 'Q';
+    } else if (game.round == 6) {
+      return 'R';
+    } else if (game.round == 3) {
+      return 'QF';
+    } else if (game.round == 4) {
+      return 'SF';
+    } else if (game.round == 5) {
+      return 'F';
     }
   }
 
   instanceModifier(game) {
     //removes .1 if type is Q
-    if (game['round'] == 2) {
+    if (game.round == 2) {
       return '';
     } else {
-      return game['instance'].toString() + '.';
+      return game.instance.toString() + '.';
     }
   }
 
   Widget mainDataModifier(game) {
     //Changes the score to show field and time if match hasnt been played yet
-    if (game['redscore'] == 0 && game['bluescore'] == 0) {
+    if (game.redscore == 0 && game.bluescore == 0) {
       return Row(children: <Widget>[
         Container(
           width: 60,
           child: Text(
-            game['field'],
+            game.field,
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
             textAlign: TextAlign.left,
             overflow: TextOverflow.fade,
@@ -58,7 +58,7 @@ class _GameListState extends State<GameList> {
         Container(
           width: 45,
           child: Text(
-            game['scheduled'].toString().substring(11, 16),
+            game.scheduled.toString().substring(11, 16),
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
             textAlign: TextAlign.right,
           ),
@@ -69,7 +69,7 @@ class _GameListState extends State<GameList> {
         Container(
           width: 35,
           child: Text(
-            game['redscore'].toString(),
+            game.redscore.toString(),
             style: TextStyle(
                 color: Colors.red, fontSize: 20, fontWeight: FontWeight.normal),
             textAlign: TextAlign.left,
@@ -79,7 +79,7 @@ class _GameListState extends State<GameList> {
         Container(
           width: 35,
           child: Text(
-            game['bluescore'].toString(),
+            game.bluescore.toString(),
             style: TextStyle(
                 color: Colors.blue,
                 fontSize: 20,
@@ -93,7 +93,7 @@ class _GameListState extends State<GameList> {
 
   sizeChanger(game) {
     //changes size for the list if match not played
-    if (game['redscore'] == 0 && game['bluescore'] == 0) {
+    if (game.redscore == 0 && game.bluescore == 0) {
       return 110.0;
     } else {
       return 80.0;
@@ -102,7 +102,7 @@ class _GameListState extends State<GameList> {
 
   Widget matchDivider(game) {
     // Removes divider if it's the first match
-    if (game['matchnum'] == 1 && game['round'] == 2) {
+    if (game.matchnum == 1 && game.round == 2) {
       return Container(
         color: const Color.fromARGB(255, 245, 250, 249),
         height: 15,
@@ -128,14 +128,17 @@ class _GameListState extends State<GameList> {
           DefaultTextStyle(
             child: Row(
               children: <Widget>[
-                Container(
-                  width: 25,
-                  child: Text(matchType(game), style: TextStyle(fontSize: 16)),
+                Padding(
+                  padding: const EdgeInsets.only(right: 5.0),
+                  child: Container(
+                    width: 20,
+                    child: Text(matchType(game), style: TextStyle(fontSize: 16), textAlign: TextAlign.right,),
+                  ),
                 ),
                 Container(
                   width: 70,
                   child: Text(
-                      instanceModifier(game) + game['matchnum'].toString(),
+                      instanceModifier(game) + game.matchnum.toString(),
                       style: TextStyle(fontSize: 25)),
                 ),
                 Spacer(flex: 3),
@@ -147,8 +150,8 @@ class _GameListState extends State<GameList> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
-                        Text(game['red1'], textAlign: TextAlign.left),
-                        Text(game['red2'], textAlign: TextAlign.left),
+                        Text(game.red1, textAlign: TextAlign.left),
+                        Text(game.red2, textAlign: TextAlign.left),
                       ],
                     ),
                   ),
@@ -165,8 +168,8 @@ class _GameListState extends State<GameList> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
-                          Text(game['blue1'], textAlign: TextAlign.right),
-                          Text(game['blue2'], textAlign: TextAlign.right),
+                          Text(game.blue1, textAlign: TextAlign.right),
+                          Text(game.blue2, textAlign: TextAlign.right),
                         ],
                       ),
                     ))
@@ -224,6 +227,7 @@ class _GameListState extends State<GameList> {
                   matchListSliver = SliverList(
                       delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
+                      print(snapshot.data[index]);
                       return gameTemplate(snapshot.data[index]);
                     },
                     childCount: snapshot.data.length,
