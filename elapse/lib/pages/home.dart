@@ -31,8 +31,13 @@ class _HomePageState extends State<HomePage> {
   void _getTeam() async { // Get currently selected teama
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _editingController.text = prefs.get('team');
-      initialText = prefs.get('team');
+      if (prefs.get('team') == null) {
+        initialText = '00000A';
+      }
+      else {
+        initialText = prefs.get('team');
+      }
+      _editingController.text = initialText;
     });
   }
 
@@ -73,12 +78,20 @@ class _HomePageState extends State<HomePage> {
             _isEditingText = true;
           });
         },
-        child: Text(
-          initialText,
-          overflow: TextOverflow.fade,
-          style: TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.w300
+        child: Container(
+          width: 110,
+          child: Row(
+            children: <Widget>[
+              Text(
+                initialText.toString(),
+                overflow: TextOverflow.fade,
+                style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.w300
+                ),
+              ),
+              Align(alignment: Alignment.bottomLeft,child: Icon(Icons.edit, size: 15.0,)),
+            ],
           ),
         )
     );
@@ -121,7 +134,6 @@ class _HomePageState extends State<HomePage> {
                         Row (
                           children: <Widget>[
                             Flexible(child: _editTitleTextField()),
-                            Align(alignment: Alignment.bottomLeft,child: Icon(Icons.edit, size: 15.0,)),
                           ],
                         ),
                         Card (
