@@ -24,10 +24,44 @@ Future<Tournament> fetchTournament(String sku) async {
   }
 }
 
+
+Future<List<Tournament>> fetchTournamentsByTeam(String team) async {
+  final response =
+  await http.get('https://api.vexdb.io/v1/get_events?sku=$team');
+  Map<String, dynamic> tRawJson = json.decode(response.body);
+
+  List<dynamic> tempTList;
+  List<Tournament> tList = [];
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+
+
+    log('internal match list made');
+    if (response.statusCode == 200) {
+      tempTList = tRawJson['result'];
+
+      for (int i = 0; i < tRawJson.length; i += 1) {
+        tList.add(Tournament.fromJson(tempTList[i]));
+      }
+      return (tList);
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      log('test');
+      throw Exception(
+          'Failed to load JSON file. Perhaps you have no internet connection?');
+    }
+  }
+}
+
 Future<List<Match>> fetchMatches(String sku) async {
   final matchResponse =
   await http.get('https://api.vexdb.io/v1/get_matches?sku=$sku');
   Map<String, dynamic> matchRawJson = json.decode(matchResponse.body);
+
+  print(matchRawJson);
 
   List<dynamic> tempMatchList;
   List<Match> matchList = [];
@@ -36,10 +70,15 @@ Future<List<Match>> fetchMatches(String sku) async {
     print(matchRawJson['result']);
     tempMatchList = matchRawJson['result'];
 
-    for (int i = 0; i < matchRawJson['size']; i += 1) {
-      print(tempMatchList[0]);
-      matchList.add(tempMatchList[i]);
+    for (int i = 0; i < matchRawJson.length; i += 1) {
+      matchList.add(Match.fromJson(tempMatchList[i]));
     }
+    return (matchList);
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    log('test');
+    throw Exception('Failed to load JSON file. Perhaps you have no internet connection?');
   }
 }
 
@@ -102,8 +141,8 @@ class Tournament {
   }
 }
 
-class _Match {
-  const _Match({
+class Match {
+  const Match({
       this.sku,
       this.division,
       this.round,
@@ -143,30 +182,30 @@ class _Match {
   final int scored;
   final String scheduled;
 
-  factory _Match.fromJson(Map<String, dynamic> json) {
+  factory Match.fromJson(Map<String, dynamic> json) {
     if (json == null || json['status'] != 1) {
       throw FormatException("Error fetching data from VexDB. Perhaps you mistyped?");
     }
 
-    return _Match(
-      sku = json['sku'],
-      division = json['division'],
-      round = json['round'],
-      instance = json['instance'],
-      matchnum = json['matchnum'],
-      field = json['field'],
-      red1 = json['red1'],
-      red2 = json['red2'],
-      red3 = json['red3'],
-      redsit = json['redsit'],
-      blue1 = json['blue1'],
-      blue2 = json['blue2'],
-      blue3 = json['blue3'],
-      bluesit = json['bluesit'],
-      redscore = json['redscore'],
-      bluescore = json['bluescore'],
-      scored = json['scored'],
-      scheduled = json['scheduled'],
-    )
+    return Match(
+      sku: json['sku'],
+      division: json['division'],
+      round: json['round'],
+      instance: json['instance'],
+      matchnum: json['matchnum'],
+      field: json['field'],
+      red1: json['red1'],
+      red2: json['red2'],
+      red3: json['red3'],
+      redsit: json['redsit'],
+      blue1: json['blue1'],
+      blue2: json['blue2'],
+      blue3: json['blue3'],
+      bluesit: json['bluesit'],
+      redscore: json['redscore'],
+      bluescore: json['bluescore'],
+      scored: json['scored'],
+      scheduled: json['scheduled'],
+    );
   }
 }
