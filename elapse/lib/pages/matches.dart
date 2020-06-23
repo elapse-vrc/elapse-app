@@ -14,7 +14,7 @@ class GameList extends StatefulWidget {
 }
 
 class _GameListState extends State<GameList> {
-  Future<Tournament> futureTournament;
+  Future<List<Match>> futureMatchList;
 
   matchType(game) {
     //gets the type of match
@@ -182,7 +182,7 @@ class _GameListState extends State<GameList> {
   @override
   void initState() {
     super.initState();
-    futureTournament = fetchTournament('RE-VRC-19-8481');
+    futureMatchList = fetchMatches('RE-VRC-19-8481');
   }
 
   @override
@@ -215,8 +215,8 @@ class _GameListState extends State<GameList> {
         child: SafeArea(
           child: Scaffold(
             backgroundColor: const Color.fromARGB(255, 245, 250, 249),
-            body: FutureBuilder<Tournament>(
-              future: futureTournament,
+            body: FutureBuilder<List<Match>>(
+              future: futureMatchList,
               builder: (context, snapshot) {
                 Widget matchListSliver;
                 if (snapshot.hasData) {
@@ -224,9 +224,9 @@ class _GameListState extends State<GameList> {
                   matchListSliver = SliverList(
                       delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                      return gameTemplate(snapshot.data.matches[index]);
+                      return gameTemplate(snapshot.data[index]);
                     },
-                    childCount: snapshot.data.matches.length,
+                    childCount: snapshot.data.length,
                   ));
                 } else if (snapshot.hasError) {
                   print('error');
@@ -255,7 +255,7 @@ class _GameListState extends State<GameList> {
 
   Future<void> _getData() async {
     setState(() {
-      futureTournament = fetchTournament('RE-VRC-19-8481');
+      futureMatchList = fetchMatches('RE-VRC-19-8481');
 
       //show a snackbar to show that loading new matches is complete
       final reloadSnackBar = SnackBar(content: Text('Refreshed matches list'));
