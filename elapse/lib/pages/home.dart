@@ -1,6 +1,11 @@
 import 'package:elapse/elapse_icons_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+bool _isEditingText = false;
+TextEditingController _editingController;
+String initialText = "00000A";
 
 /*class HomePage extends StatelessWidget {
   const HomePage({Key key}) : super(key: key);
@@ -22,6 +27,63 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  void _getTeam() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _editingController.text = prefs.get('team');
+      initialText = prefs.get('team');
+    });
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    _editingController = TextEditingController(text: initialText);
+    _getTeam();
+  }
+
+  @override
+  void dispose() {
+    _editingController.dispose();
+    super.dispose();
+  }
+
+  _newTeamWritten(val) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      initialText = val.toUpperCase();
+      _isEditingText = false;
+    });
+    await prefs.setString('team', initialText);
+  }
+
+  Widget _editTitleTextField() {
+    if (_isEditingText)
+      return TextField(
+        maxLength: 10,
+        maxLengthEnforced: true,
+        onSubmitted: (newValue){_newTeamWritten(newValue);},
+        autofocus: true,
+        controller: _editingController,
+      );
+    return InkWell(
+        onTap: () {
+          setState(() {
+            _isEditingText = true;
+          });
+        },
+        child: Text(
+          initialText,
+          overflow: TextOverflow.fade,
+          style: TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.w300
+          ),
+        )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -34,6 +96,7 @@ class _HomePageState extends State<HomePage> {
         color: const Color.fromARGB(255, 245, 250, 249),
         child: SafeArea(
           child: Scaffold(
+            resizeToAvoidBottomPadding: false,
             backgroundColor: const Color.fromARGB(255, 245, 250, 249),
             body: CustomScrollView(
               physics: NeverScrollableScrollPhysics(),
@@ -42,7 +105,7 @@ class _HomePageState extends State<HomePage> {
                   backgroundColor: const Color.fromARGB(255, 245, 250, 249),
                   expandedHeight: 150.0,
                   flexibleSpace: const FlexibleSpaceBar(
-                    title: Text('Home', textAlign: TextAlign.left, style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300),),
+                    title: Text('Welcome back!', textAlign: TextAlign.left, style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300),),
                     titlePadding: EdgeInsetsDirectional.only(start: 20, bottom: 16),
                   ),
                   floating: false,
@@ -57,12 +120,12 @@ class _HomePageState extends State<HomePage> {
                       children: <Widget>[
                         Row (
                           children: <Widget>[
-                            Text('839A', style: TextStyle(fontSize: 25, fontWeight: FontWeight.w300),),
-                            Icon(Icons.edit),
+                            Flexible(child: _editTitleTextField()),
+                            Align(alignment: Alignment.bottomLeft,child: Icon(Icons.edit, size: 15.0,)),
                           ],
                         ),
                         Card (
-                          margin: const EdgeInsets.all(0.0),
+                          margin: const EdgeInsets.only(top: 10.0),
                           child: Padding (
                             padding: const EdgeInsets.all(12.0),
                             child: Column (
