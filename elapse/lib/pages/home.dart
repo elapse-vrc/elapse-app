@@ -28,7 +28,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  void _getTeam() async {
+  void _getTeam() async { // Get currently selected teama
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _editingController.text = prefs.get('team');
@@ -44,24 +44,24 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  void dispose() {
+  void dispose() { // Dispose of the editing controller when main widget is disposed
     _editingController.dispose();
     super.dispose();
   }
 
-  _newTeamWritten(val) async {
+  _newTeamWritten(val) async { // When new team is written, update initialText and write to disk
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      initialText = val.toUpperCase();
+      initialText = val.toUpperCase(); // Convert 000a to 000A for consistency
       _isEditingText = false;
     });
     await prefs.setString('team', initialText);
   }
 
-  Widget _editTitleTextField() {
+  Widget _editTitleTextField() { // Text field to be able to write to. Using TextField instead of EditableText because of autofocus. May change in the future.
     if (_isEditingText)
       return TextField(
-        maxLength: 10,
+        maxLength: 10, // There's no teams that have more than 6 characters, but I had to be safe.
         maxLengthEnforced: true,
         onSubmitted: (newValue){_newTeamWritten(newValue);},
         autofocus: true,
