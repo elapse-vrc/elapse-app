@@ -14,40 +14,100 @@ class GameList extends StatefulWidget {
 }
 
 class _GameListState extends State<GameList> {
-  Future<Tournament> futureTournament;
+  Future<List<Match>> futureMatchList;
 
-  matchType(game) { //gets the type of match
-    if (game['round'] == 2) {
-      return 'Q ';
-    }
-    else if (game['round'] == 6) {
-      return 'R ';
-    }
-    else if (game['round'] == 3) {
-      return 'QF ';
-    }
-    else if (game['round'] == 4) {
-      return 'SF ';
-    }
-    else if (game['round'] == 5) {
-      return 'F ';
+  matchType(game) {
+    //gets the type of match
+    if (game.round == 2) {
+      return 'Q';
+    } else if (game.round == 6) {
+      return 'R';
+    } else if (game.round == 3) {
+      return 'QF';
+    } else if (game.round == 4) {
+      return 'SF';
+    } else if (game.round == 5) {
+      return 'F';
     }
   }
 
-  instanceModifier(game) { //removes .1 if type is Q
-    if (game['round'] == 2) {
+  instanceModifier(game) {
+    //removes .1 if type is Q
+    if (game.round == 2) {
       return '';
-    }
-    else {
-      return game['instance'].toString()+'.';
+    } else {
+      return game.instance.toString() + '.';
     }
   }
 
-  Widget matchDivider(game) { // Removes divider if it's the first match
-    if (game['matchnum'] == 1 && game['round'] == 2) {
-      return Container(color: const Color.fromARGB(255, 245, 250, 249), height: 15,);
+  Widget mainDataModifier(game) {
+    //Changes the score to show field and time if match hasnt been played yet
+    if (game.redscore == 0 && game.bluescore == 0) {
+      return Row(children: <Widget>[
+        Container(
+          width: 60,
+          child: Text(
+            game.field,
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+            textAlign: TextAlign.left,
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+        ),
+        Spacer(flex: 1),
+        Container(
+          width: 45,
+          child: Text(
+            game.scheduled.toString().substring(11, 16),
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+            textAlign: TextAlign.right,
+          ),
+        ),
+      ]);
+    } else {
+      return Row(children: <Widget>[
+        Container(
+          width: 35,
+          child: Text(
+            game.redscore.toString(),
+            style: TextStyle(
+                color: Colors.red, fontSize: 20, fontWeight: FontWeight.normal),
+            textAlign: TextAlign.left,
+          ),
+        ),
+        Spacer(flex: 1),
+        Container(
+          width: 35,
+          child: Text(
+            game.bluescore.toString(),
+            style: TextStyle(
+                color: Colors.blue,
+                fontSize: 20,
+                fontWeight: FontWeight.normal),
+            textAlign: TextAlign.right,
+          ),
+        ),
+      ]);
     }
-    else {
+  }
+
+  sizeChanger(game) {
+    //changes size for the list if match not played
+    if (game.redscore == 0 && game.bluescore == 0) {
+      return 110.0;
+    } else {
+      return 80.0;
+    }
+  }
+
+  Widget matchDivider(game) {
+    // Removes divider if it's the first match
+    if (game.matchnum == 1 && game.round == 2) {
+      return Container(
+        color: const Color.fromARGB(255, 245, 250, 249),
+        height: 15,
+      );
+    } else {
       return Divider(
         color: const Color(0xE6E6E6FF),
         height: 20,
@@ -68,10 +128,18 @@ class _GameListState extends State<GameList> {
           DefaultTextStyle(
             child: Row(
               children: <Widget>[
-                Text(matchType(game), style: TextStyle(fontSize: 16)),
+                Padding(
+                  padding: const EdgeInsets.only(right: 5.0),
+                  child: Container(
+                    width: 20,
+                    child: Text(matchType(game), style: TextStyle(fontSize: 16), textAlign: TextAlign.right,),
+                  ),
+                ),
                 Container(
                   width: 70,
-                  child: Text(instanceModifier(game)+game['matchnum'].toString(), style: TextStyle(fontSize: 25)),
+                  child: Text(
+                      instanceModifier(game) + game.matchnum.toString(),
+                      style: TextStyle(fontSize: 25)),
                 ),
                 Spacer(flex: 3),
                 Container(
@@ -82,34 +150,15 @@ class _GameListState extends State<GameList> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
-                        Text(game['red1'], textAlign: TextAlign.left),
-                        Text(game['red2'], textAlign: TextAlign.left),
+                        Text(game.red1, textAlign: TextAlign.left),
+                        Text(game.red2, textAlign: TextAlign.left),
                       ],
                     ),
                   ),
                 ),
                 Container(
-                  width: 35,
-                  child: Text(
-                    game['redscore'].toString(),
-                    style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 20,
-                        fontWeight: FontWeight.normal),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-                Spacer(flex: 1),
-                Container(
-                  width: 35,
-                  child: Text(
-                    game['bluescore'].toString(),
-                    style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 20,
-                        fontWeight: FontWeight.normal),
-                    textAlign: TextAlign.right,
-                  ),
+                  width: sizeChanger(game),
+                  child: mainDataModifier(game),
                 ),
                 Container(
                     width: 60,
@@ -119,8 +168,8 @@ class _GameListState extends State<GameList> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
-                          Text(game['blue1'], textAlign: TextAlign.right),
-                          Text(game['blue2'], textAlign: TextAlign.right),
+                          Text(game.blue1, textAlign: TextAlign.right),
+                          Text(game.blue2, textAlign: TextAlign.right),
                         ],
                       ),
                     ))
@@ -136,22 +185,26 @@ class _GameListState extends State<GameList> {
   @override
   void initState() {
     super.initState();
-    futureTournament = fetchTournament('RE-VRC-19-8481');
+    futureMatchList = fetchMatches('RE-VRC-19-8481');
   }
 
   @override
-  Widget build(BuildContext context) { // https://stackoverflow.com/questions/52146850/how-to-use-futurebuilder-inside-sliverlist
-    final appBarSliver = SliverAppBar (
+  Widget build(BuildContext context) {
+    // https://stackoverflow.com/questions/52146850/how-to-use-futurebuilder-inside-sliverlist
+    final appBarSliver = SliverAppBar(
       backgroundColor: const Color.fromARGB(255, 245, 250, 249),
       expandedHeight: 150.0,
       flexibleSpace: const FlexibleSpaceBar(
-        title: Text('Matches', textAlign: TextAlign.left, style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300),),
+        title: Text(
+          'Matches',
+          textAlign: TextAlign.left,
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300),
+        ),
         titlePadding: EdgeInsetsDirectional.only(start: 20, bottom: 16),
       ),
       floating: false,
       pinned: true,
       elevation: 8,
-
     );
 
     return MaterialApp(
@@ -165,34 +218,36 @@ class _GameListState extends State<GameList> {
         child: SafeArea(
           child: Scaffold(
             backgroundColor: const Color.fromARGB(255, 245, 250, 249),
-            body: FutureBuilder<Tournament>(
-              future: futureTournament,
+            body: FutureBuilder<List<Match>>(
+              future: futureMatchList,
               builder: (context, snapshot) {
                 Widget matchListSliver;
                 if (snapshot.hasData) {
                   //print(snapshot.data.matches[0]['division']);
                   matchListSliver = SliverList(
                       delegate: SliverChildBuilderDelegate(
-                            (BuildContext context, int index) {
-                          return gameTemplate(snapshot.data.matches[index]);
-                        },
-                        childCount: snapshot.data.matches.length,
-                      )
-                  );
+                    (BuildContext context, int index) {
+                      print(snapshot.data[index]);
+                      return gameTemplate(snapshot.data[index]);
+                    },
+                    childCount: snapshot.data.length,
+                  ));
                 } else if (snapshot.hasError) {
                   print('error');
                   return Text("${snapshot.error}");
                 } else {
                   print('loading');
                   // By default, show a loading spinner.
-                  matchListSliver =
-                      SliverFillRemaining(child: Center(child: Container(child: CircularProgressIndicator()),));
+                  matchListSliver = SliverFillRemaining(
+                      child: Center(
+                    child: Container(child: CircularProgressIndicator()),
+                  ));
                 }
-                return CustomScrollView(
-                  slivers: <Widget>[
-                    appBarSliver,
-                    matchListSliver
-                  ],
+                return RefreshIndicator(
+                  child: CustomScrollView(
+                    slivers: <Widget>[appBarSliver, matchListSliver],
+                  ),
+                  onRefresh: _getData,
                 );
               },
             ),
@@ -200,5 +255,15 @@ class _GameListState extends State<GameList> {
         ),
       ),
     );
+  }
+
+  Future<void> _getData() async {
+    setState(() {
+      futureMatchList = fetchMatches('RE-VRC-19-8481');
+
+      //show a snackbar to show that loading new matches is complete
+      final reloadSnackBar = SnackBar(content: Text('Refreshed matches list'));
+      Scaffold.of(context).showSnackBar(reloadSnackBar);
+    });
   }
 }
