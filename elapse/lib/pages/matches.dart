@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:elapse/game.dart';
 import 'dart:developer';
+import 'package:marquee/marquee.dart';
+
 
 void main() {
   runApp(MaterialApp(home: GameList()));
@@ -40,22 +42,46 @@ class _GameListState extends State<GameList> {
     }
   }
 
+  Widget marqueeMaker(game) {
+    if (game.field.length < 10) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(
+            game.field,
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+            textAlign: TextAlign.left,
+          ),
+        ],
+      );
+    }
+    else {
+      return Marquee(
+              text: game.field,
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+              scrollAxis: Axis.horizontal,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              velocity: 10,
+              blankSpace: 25.0,
+              pauseAfterRound: Duration(seconds: 1),
+              accelerationDuration: Duration(seconds: 1),
+              decelerationDuration: Duration(seconds: 1),
+      );
+    }
+  }
+
   Widget mainDataModifier(game) {
     //Changes the score to show field and time if match hasnt been played yet
     if (game.redscore == 0 && game.bluescore == 0) {
       return Row(children: <Widget>[
         Container(
           width: 60,
-          child: Text(
-            game.field,
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
-            textAlign: TextAlign.left,
-            overflow: TextOverflow.fade,
-            softWrap: false,
-          ),
+          height: 30,
+          child: marqueeMaker(game)
         ),
         Spacer(flex: 1),
         Container(
+
           width: 45,
           child: Text(
             game.scheduled.toString().substring(11, 16),
