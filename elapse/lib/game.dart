@@ -25,9 +25,11 @@ Future<Tournament> fetchTournament(String sku) async {
 }
 
 
-Future<List<Tournament>> fetchTournamentsByTeam(String team) async {
+Future<List<Tournament>> fetchTournamentsByTeam(String team, {bool afterCurrentDate = false, int responses:99999999}) async {
+
+  String rAmount = responses.toString();
   final response =
-  await http.get('https://api.vexdb.io/v1/get_events?sku=$team');
+  await http.get('https://api.vexdb.io/v1/get_events?team=$team&limit_number=$rAmount');
   Map<String, dynamic> tRawJson = json.decode(response.body);
 
   List<dynamic> tempTList;
@@ -36,15 +38,25 @@ Future<List<Tournament>> fetchTournamentsByTeam(String team) async {
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-
-
     log('internal match list made');
     if (response.statusCode == 200) {
       tempTList = tRawJson['result'];
 
-      for (int i = 0; i < tRawJson.length; i += 1) {
-        tList.add(Tournament.fromJson(tempTList[i]));
+      for (int i = 0; i < tRawJson['size']; i += 1) {
+        //print(tempTList[i]['sku']);
+        var tDate = DateTime.parse(tempTList[i]['start']);
+        if (afterCurrentDate) {
+          if (tDate
+              .difference(DateTime.now())
+              .inDays > -1) {
+            tList.add(Tournament.fromJson(tempTList[i]));
+          }
+        }
+        else {
+          tList.add(Tournament.fromJson(tempTList[i]));
+        }
       }
+      tList = afterCurrentDate && tList.isNotEmpty ? tList.reversed.toList() : tList; // Reverse the list to make it from day up
       return (tList);
     } else {
       // If the server did not return a 200 OK response,
@@ -98,6 +110,7 @@ class Tournament {
     this.season,
     this.start,
     this.end,
+    this.divisions
   });
 
   final String sku;
@@ -114,13 +127,13 @@ class Tournament {
   final String season;
   final String start;
   final String end;
+  final List<dynamic> divisions;
 
 
   factory Tournament.fromJson(Map<String, dynamic> json) {
-    if (json == null || json['status'] != 1) {
+    if (json == null) {
       throw FormatException("Error fetching data from VexDB. Perhaps you mistyped?");
     }
-    json = json['result'][0];
 
     return Tournament(
       sku: json['sku'],
@@ -128,7 +141,7 @@ class Tournament {
       program: json['program'],
       name: json['name'],
       locVenue: json['loc_venue'],
-      locAddress1: json['loc_address_1'],
+      locAddress1: json['loc_address1'],
       locCity: json['loc_city'],
       locRegion: json['loc_region'],
       locPostal: json['loc_postcode'],
@@ -136,31 +149,32 @@ class Tournament {
       season: json['season'],
       start: json['start'],
       end: json['end'],
+      divisions: json['divisions'],
     );
   }
 }
 
 class Match {
   const Match({
-      this.sku,
-      this.division,
-      this.round,
-      this.instance,
-      this.matchnum,
-      this.field,
-      this.red1,
-      this.red2,
-      this.red3,
-      this.redsit,
-      this.blue1,
-      this.blue2,
-      this.blue3,
-      this.bluesit,
-      this.redscore,
-      this.bluescore,
-      this.scored,
-      this.scheduled
-    });
+    this.sku,
+    this.division,
+    this.round,
+    this.instance,
+    this.matchnum,
+    this.field,
+    this.red1,
+    this.red2,
+    this.red3,
+    this.redsit,
+    this.blue1,
+    this.blue2,
+    this.blue3,
+    this.bluesit,
+    this.redscore,
+    this.bluescore,
+    this.scored,
+    this.scheduled,
+  });
 
   final String sku;
   final String division;

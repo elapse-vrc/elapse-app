@@ -2,6 +2,7 @@ import 'package:elapse/elapse_icons_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:elapse/game.dart';
 
 bool _isEditingText = false;
 TextEditingController _editingController;
@@ -26,9 +27,19 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
+class MyBehavior extends ScrollBehavior { // get rid of scroll glow
+  @override
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
+  }
+}
+
 class _HomePageState extends State<HomePage> {
 
-  void _getTeam() async { // Get currently selected teama
+  Future<List<Tournament>> futureTournamentList;
+
+  void _getTeam() async { // Get currently selected teams
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       if (prefs.get('team') == null) {
@@ -39,6 +50,7 @@ class _HomePageState extends State<HomePage> {
       }
       _editingController.text = initialText;
     });
+    futureTournamentList = fetchTournamentsByTeam(initialText, afterCurrentDate: true);
   }
 
   @override
@@ -59,6 +71,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       initialText = val.toUpperCase(); // Convert 000a to 000A for consistency
       _isEditingText = false;
+      _getData();
     });
     await prefs.setString('team', initialText);
   }
@@ -97,6 +110,126 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  String xDaysAway (tour) {
+    print(tour.start);
+    String t = tour.start;
+    var now = DateTime.now();
+    var tournamentDate = DateTime.parse(t);
+    print(tournamentDate.toIso8601String());
+
+    final difference = tournamentDate.difference(now).inDays;
+
+    return difference.toString() + " days away";
+  }
+
+  Widget tTemplate(tournamentList, index) {
+    Widget tDivider (i) {
+      if (i == 5) {
+        return Container();
+      }
+      else {
+        return Divider(
+          color: const Color(0xE6E6E6FF),
+          height: 20,
+          thickness: 1,
+          indent: 20,
+          endIndent: 20,
+        );
+      }
+    }
+    
+    if (tournamentList.length < index) {
+      return Container();
+    }
+    else {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(
+                tournamentList[index].name,
+              style: TextStyle(
+                fontWeight: FontWeight.w300,
+                fontSize: 15,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+                xDaysAway(tournamentList[index]),
+              style: TextStyle (
+                color: Colors.black26,
+              )
+            ),
+            tDivider(index),
+          ],
+        ),
+      );
+    }
+  }
+  
+  Widget TournamentList (List<Tournament> tData) {
+    if (tData.isNotEmpty) {
+      return Column(
+        children: <Widget>[
+          Card(
+            shape: RoundedRectangleBorder(
+              side: BorderSide(color: Colors.grey[400], width: 1.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            elevation: 0,
+            color: const Color.fromARGB(255, 250, 255, 254),
+            margin: const EdgeInsets.only(top: 10.0),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment
+                    .stretch,
+                children: <Widget>[
+                  Container(
+                    height: 60,
+                    child: Text(
+                      tData[0].name,
+                      style: TextStyle(fontSize: 20,
+                          fontWeight: FontWeight.w300),
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                  ),
+                  Text(xDaysAway(tData[0])),
+                ],
+              ),
+            ),
+          ),
+          Container(height: 20,),
+          tTemplate(tData, 1),
+          tTemplate(tData, 2),
+          tTemplate(tData, 3),
+          tTemplate(tData, 4),
+          tTemplate(tData, 5),
+        ],
+      );
+    }
+    else {
+      return Container(
+        height: 450,
+        child: Center(child:
+          Text(
+              "No data found! Wrong team, or you're all done for the season!",
+            style: TextStyle (
+              fontStyle: FontStyle.italic,
+              color: Colors.black54,
+              fontSize: 20
+            ),
+            textAlign: TextAlign.center,
+          )
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -110,62 +243,86 @@ class _HomePageState extends State<HomePage> {
         child: SafeArea(
           child: Scaffold(
             resizeToAvoidBottomPadding: false,
+            resizeToAvoidBottomInset: false,
             backgroundColor: const Color.fromARGB(255, 245, 250, 249),
-            body: CustomScrollView(
-              physics: NeverScrollableScrollPhysics(),
-              slivers: <Widget>[
-                  SliverAppBar (
-                  backgroundColor: const Color.fromARGB(255, 245, 250, 249),
-                  expandedHeight: 150.0,
-                  flexibleSpace: const FlexibleSpaceBar(
-                    title: Text('Welcome back!', textAlign: TextAlign.left, style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300),),
-                    titlePadding: EdgeInsetsDirectional.only(start: 20, bottom: 16),
+            body: ScrollConfiguration(
+              behavior: MyBehavior(),
+              child: CustomScrollView(
+                slivers: <Widget>[
+                    SliverAppBar (
+                    backgroundColor: const Color.fromARGB(255, 245, 250, 249),
+                    expandedHeight: 150.0,
+                    flexibleSpace: const FlexibleSpaceBar(
+                      title: Text('Welcome back!', textAlign: TextAlign.left, style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300),),
+                      titlePadding: EdgeInsetsDirectional.only(start: 20, bottom: 16),
+                    ),
+                    floating: false,
+                    pinned: true,
+                    elevation: 8,
                   ),
-                  floating: false,
-                  pinned: true,
-                  elevation: 8,
-                ),
-                SliverFillRemaining (
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Row (
+                  SliverFillRemaining (
+                    hasScrollBody: false,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: SingleChildScrollView(
+                        child: Column(
                           children: <Widget>[
-                            Flexible(child: _editTitleTextField()),
-                          ],
-                        ),
-                        Card (
-                          margin: const EdgeInsets.only(top: 10.0),
-                          child: Padding (
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column (
+                            Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: <Widget>[
-                                Container(
-                                  height: 60,
-                                  child: Text('Signature Event: High School VRC KALAHARI CLASSIC INDOOR WATERPARK MULTI-STATE EVENT',
-                                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
-                                    softWrap: true,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
-                                  ),
+                                Row(
+                                  children: <Widget>[
+                                    Flexible(child: _editTitleTextField()),
+                                  ],
                                 ),
-                                Text('100 days away'),
+                                FutureBuilder<List<Tournament>>(
+                                  future: futureTournamentList,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      return TournamentList(snapshot.data);
+                                    }
+                                    else if (snapshot.hasError) {
+                                      print('error');
+                                      return Text("${snapshot.error}");
+                                    }
+                                    else {
+                                      return Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }
+                                  }
+                                ),
+                                //Spacer(flex:1),
+
                               ],
                             ),
-                          ),
-                        )
-                      ],
+                            Container(height: 20),
+                            Center(
+                                child: Text(
+                                  "Always file your axles!",
+                                  style: TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                    color: Colors.black26,
+                                  ),
+                                )
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             )
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _getData() async {
+    setState(() {
+      futureTournamentList = fetchTournamentsByTeam(initialText, afterCurrentDate: true);
+    });
   }
 }
