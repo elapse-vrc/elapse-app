@@ -234,7 +234,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Match Screen',
+      title: 'Home Screen',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
