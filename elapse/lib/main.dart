@@ -67,15 +67,15 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(ElapseIcons.matches),
-            title: Text('Matches'),
+            title: Text('•'),
           ),
           BottomNavigationBarItem(
             icon: Icon(ElapseIcons.home),
-            title: Text('Home'),
+            title: Text('•'),
           ),
           BottomNavigationBarItem(
             icon: Icon(ElapseIcons.settings),
-            title: Text('Configure'),
+            title: Text('•'),
           ),
         ],
         currentIndex: _selectedIndex,
