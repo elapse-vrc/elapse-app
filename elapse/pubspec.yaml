@@ -26,6 +26,7 @@ dependencies:
   http: ^0.12.1
   shared_preferences: '>=0.5.0 <2.0.0'
   marquee: ^1.5.2
+  url_launcher: ^5.4.11
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -48,9 +49,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - include/drawable/images/elapselogodark.png
+    - include/drawable/images/smallelapse.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
