@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:elapse/game.dart';
+import 'package:elapse/gameRoboEvent.dart' as gre;
 
 bool _isEditingText = false;
 TextEditingController _editingController;
@@ -58,6 +59,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _editingController = TextEditingController(text: initialText);
     _getTeam();
+    gre.testFunc();
   }
 
   @override

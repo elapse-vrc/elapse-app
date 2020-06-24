@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:developer';
+import 'package:html/parser.dart';
 
 
 Future<Tournament> fetchTournament(String sku) async {
@@ -92,6 +93,34 @@ Future<List<Match>> fetchMatches(String sku) async {
     //log('test');
     throw Exception('Failed to load JSON file. Perhaps you have no internet connection?');
   }
+}
+
+Future<List<dynamic>> getCsrfTokenAndCookie () async {
+  final response =
+  await http.Client().get(Uri.parse('https://www.robotevents.com'));
+
+  final body = parse(response.body); // Convert body into readable string
+
+  if (response.statusCode == 200) {
+    final csrfToken = body.getElementsByTagName('meta')[3].attributes['content']; // Extract csrf-token from all meta tags and store content attribute
+    final cookie = response.headers['set-cookie'];
+    print(csrfToken);
+    return [csrfToken, '1'];
+  } else {
+    throw Exception();
+  }
+}
+
+Future<List<Tournament>> testFunc () async {
+  final cookieandtoken = await getCsrfTokenAndCookie();
+  final csrfToken = cookieandtoken[0];
+  //final cookie = cookieandtoken[1];
+
+  final response = await http.Client().get(
+      'https://www.robotevents.com/api/v2/events',
+    headers: {'csrf-token': csrfToken}
+  );
+  print(response.body);
 }
 
 // Serialize Tournament data into a readable object format
