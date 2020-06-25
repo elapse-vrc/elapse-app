@@ -192,7 +192,7 @@ class _GameListState extends State<GameList> {
   Widget _editTitleTextField() { // Text field to be able to write to. Using TextField instead of EditableText because of autofocus. May change in the future.
     if (_isEditingText)
       return TextField(
-        maxLength: 10, // There's no teams that have more than 6 characters, but I had to be safe.
+        maxLength: 14, // There's no teams that have more than 6 characters, but I had to be safe.
         maxLengthEnforced: true,
         onSubmitted: (newValue){_newTeamWritten(newValue);},
         autofocus: true,
@@ -205,29 +205,33 @@ class _GameListState extends State<GameList> {
           });
         },
         child: Container(
-          width: 110,
-          child: Row(
-            children: <Widget>[
-              Text(
-                initialText.toString(),
-                overflow: TextOverflow.fade,
-                style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.w300
+            width: 200,
+            height: 25,
+            child: Row(
+              children: <Widget>[
+                Text(
+                  initialText.toString(),
+                  overflow: TextOverflow.fade,
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w300
+                  ),
                 ),
-              ),
-              Align(alignment: Alignment.bottomLeft,child: Icon(Icons.edit, size: 15.0,)),
-            ],
+                Align(alignment: Alignment.centerLeft,child: Icon(Icons.edit, size: 15.0,)),
+              ],
+            ),
           ),
-        )
     );
   }
 
   Widget textEdit() {
-    return Row(
-      children: <Widget>[
-        Flexible(child: _editTitleTextField()),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0),
+      child: Row(
+        children: <Widget>[
+          Flexible(child: _editTitleTextField()),
+        ],
+      ),
     );
   }
   
@@ -325,6 +329,8 @@ class _GameListState extends State<GameList> {
         color: const Color.fromARGB(255, 245, 250, 249),
         child: SafeArea(
           child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            resizeToAvoidBottomPadding: false,
             backgroundColor: const Color.fromARGB(255, 245, 250, 249),
             body: FutureBuilder<List<Match>>(
               future: futureMatchList,
@@ -355,7 +361,11 @@ class _GameListState extends State<GameList> {
 
                 }
 
-                final textSliver = textEdit();
+                final textSliver = SliverToBoxAdapter(
+                  child: Container(
+                      child: textEdit(),
+                  ),
+                );
 
 
                 return RefreshIndicator(
