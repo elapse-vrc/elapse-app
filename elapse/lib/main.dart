@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
         statusBarIconBrightness: Brightness.dark,
       ),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: _title,
         home: MyStatefulWidget(),
       ),
