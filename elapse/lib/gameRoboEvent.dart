@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:developer';
 import 'package:html/parser.dart';
@@ -103,9 +104,10 @@ Future<List<dynamic>> getCsrfTokenAndCookie () async {
 
   if (response.statusCode == 200) {
     final csrfToken = body.getElementsByTagName('meta')[3].attributes['content']; // Extract csrf-token from all meta tags and store content attribute
-    final cookie = response.headers['set-cookie'];
+    final cookie = response.headers['set-cookie'].split(',').map((cookie) => cookie.substring(0, cookie.indexOf(';') + 1)).join(' ');
     print(csrfToken);
-    return [csrfToken, '1'];
+    print(cookie);
+    return [csrfToken, cookie];
   } else {
     throw Exception();
   }
@@ -114,11 +116,14 @@ Future<List<dynamic>> getCsrfTokenAndCookie () async {
 Future<List<Tournament>> testFunc () async {
   final cookieandtoken = await getCsrfTokenAndCookie();
   final csrfToken = cookieandtoken[0];
-  //final cookie = cookieandtoken[1];
+  final cookie = cookieandtoken[1];
 
   final response = await http.Client().get(
       'https://www.robotevents.com/api/v2/events',
-    headers: {'csrf-token': csrfToken}
+    headers: {
+        'origin': 'https://www.robotevents.com',
+        'x-csrf-token': csrfToken,
+      }
   );
   print(response.body);
 }
