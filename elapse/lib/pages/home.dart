@@ -101,11 +101,11 @@ class _HomePageState extends State<HomePage> {
                 initialText.toString(),
                 overflow: TextOverflow.fade,
                 style: TextStyle(
-                    fontSize: 25,
+                    fontSize: 20,
                     fontWeight: FontWeight.w300
                 ),
               ),
-              Align(alignment: Alignment.bottomLeft,child: Icon(Icons.edit, size: 15.0,)),
+              Align(alignment: Alignment.centerLeft,child: Icon(Icons.edit, size: 15.0,)),
             ],
           ),
         )
