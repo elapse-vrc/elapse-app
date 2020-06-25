@@ -139,7 +139,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           ListTile(
                             title: Text('More Info'),
                             trailing: Icon(Icons.info),
-                            onTap: () => showAboutDialog(context: context, applicationVersion: '1.0.0', applicationName: 'Elapse', applicationLegalese: 'Elapse is an app for the VEX Robotics Competition.', applicationIcon: appIcon()),
+                            onTap: () => showAboutDialog(context: context, applicationVersion: '0.0.1', applicationName: 'Elapse', applicationLegalese: 'Elapse is an app for the VEX Robotics Competition.', applicationIcon: appIcon()),
                           ),
                           Container(
                             height: 20,
