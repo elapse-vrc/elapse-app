@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:elapse/game.dart';
+import 'package:elapse/pages/randomTips.dart';
+import 'dart:math';
 
 bool _isEditingText = false;
 TextEditingController _editingController;
@@ -299,11 +301,12 @@ class _HomePageState extends State<HomePage> {
                             Container(height: 20),
                             Center(
                                 child: Text(
-                                  "Always file your axles!",
+                                  selectRandomTip(),
                                   style: TextStyle(
                                     fontStyle: FontStyle.italic,
                                     color: Colors.black26,
                                   ),
+                                  textAlign: TextAlign.center,
                                 )
                             ),
                           ],
