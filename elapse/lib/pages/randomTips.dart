@@ -47,7 +47,7 @@ selectRandomTip() {
     return 'Be prepared for you next tournament!';
   }
   else if(r == 13) {
-    return "Did you know compressed air doesn't do anything to motors? Yeah, stop wasting your money.";
+    return "Always use screws!";
   }
   else if(r == 14) {
     return "This season's game looks like Tic-Tac-Toe!";
