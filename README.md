@@ -29,3 +29,6 @@ We use trello to keep track of our tasks and projects. View the board [here](htt
 
 ## Discord
 Join our [discord](https://discord.gg/7XFQYYp)!
+
+## Vexforum Post
+https://www.vexforum.com/t/elapse-an-oss-schedule-viewer-putting-ux-first/82525
