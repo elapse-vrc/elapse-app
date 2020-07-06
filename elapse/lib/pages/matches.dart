@@ -235,10 +235,33 @@ class _GameListState extends State<GameList> {
   }
 
   Widget elimsMarker(game) {
-    if (game.round == 2 && game.matchnum == 1) {
+    var textVal = 'Match Type';
+    if (game.instance == 1 && game.matchnum == 1) {
+      switch(game.round) {
+        case 1:
+          textVal = 'Practice';
+          break;
+        case 2:
+          textVal = 'Qualifications';
+          break;
+        case 3:
+          textVal = 'Quarterfinals';
+          break;
+        case 4:
+          textVal = 'Semifinals';
+          break;
+        case 5:
+          textVal = 'Finals';
+          break;
+        case 6:
+          textVal = 'Round of 16';
+          break;
+        default:
+          return Container(height: 0, width: 0,);
+      }
       return Column(
         children: [
-          Center(child: Text('Qualifications')),
+          Center(child: Text(textVal)),
           Divider(
             color: const Color(0xE6E6E6FF),
             height: 20,
@@ -248,63 +271,9 @@ class _GameListState extends State<GameList> {
           ),
         ],
       );
-    } else if (game.round == 3 && game.instance == 1) {
-      return Column(
-        children: [
-          Center(child: Text('Quarterfinals')),
-          Divider(
-            color: const Color(0xE6E6E6FF),
-            height: 20,
-            thickness: 1,
-            indent: 20,
-            endIndent: 20,
-          ),
-        ],
-      );
-    } else if (game.round == 4 && game.instance == 1) {
-      return Column(
-        children: [
-          Center(child: Text('Semifinals')),
-          Divider(
-            color: const Color(0xE6E6E6FF),
-            height: 20,
-            thickness: 1,
-            indent: 20,
-            endIndent: 20,
-          ),
-        ],
-      );
-    } else if (game.round == 5 && game.instance == 1) {
-      return Column(
-        children: [
-          Center(child: Text('Finals')),
-          Divider(
-            color: const Color(0xE6E6E6FF),
-            height: 20,
-            thickness: 1,
-            indent: 20,
-            endIndent: 20,
-          ),
-        ],
-      );
-    } else if (game.round == 6 && game.instance == 1) {
-      return Column(
-        children: [
-          Center(child: Text('Round of 16')),
-          Divider(
-            color: const Color(0xE6E6E6FF),
-            height: 20,
-            thickness: 1,
-            indent: 20,
-            endIndent: 20,
-          ),
-        ],
-      );
-    } else {
-      return Container(
-        height: 0,
-        width: 0,
-      );
+    }
+    else{
+      return Container(height: 0, width: 0,);
     }
   }
 
