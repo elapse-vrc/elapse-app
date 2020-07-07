@@ -409,12 +409,17 @@ class _GameListState extends State<GameList> {
                   ),
                 );
 
+                final bottomPaddingSliver = SliverToBoxAdapter(
+                  child: Container(height: 30),
+                );
+
                 return RefreshIndicator(
                   child: CustomScrollView(
                     slivers: <Widget>[
                       appBarSliver,
                       textSliver,
                       matchListSliver,
+                      bottomPaddingSliver
                     ],
                   ),
                   onRefresh: _getData,
