@@ -1,4 +1,5 @@
 import 'package:elapse/elapse_icons_icons.dart';
+import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -60,6 +61,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _editingController = TextEditingController(text: initialText);
     _getTeam();
+    _updateTournamentList(initialText);
   }
 
   @override
@@ -68,7 +70,7 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  _newTeamWritten(val) async { // When new team is written, update initialText and write to disk
+  _updateTournamentList(val) async { // When new team is written, update initialText and write to disk
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       initialText = val.toUpperCase(); // Convert 000a to 000A for consistency
@@ -83,7 +85,7 @@ class _HomePageState extends State<HomePage> {
       return TextField(
         maxLength: 10, // There's no teams that have more than 6 characters, but I had to be safe.
         maxLengthEnforced: true,
-        onSubmitted: (newValue){_newTeamWritten(newValue);},
+        onSubmitted: (newValue){_updateTournamentList(newValue);},
         autofocus: true,
         controller: _editingController,
       );
@@ -189,17 +191,15 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment
                     .stretch,
                 children: <Widget>[
-                  Container(
-                    height: 60,
-                    child: Text(
+                  Text(
                       tData[0].name,
                       style: TextStyle(fontSize: 20,
                           fontWeight: FontWeight.w300),
                       softWrap: true,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
-                    ),
                   ),
+                  Container(height: 20),
                   Text(xDaysAway(tData[0])),
                 ],
               ),
@@ -325,7 +325,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _getData() async {
     setState(() {
-      futureTournamentList = fetchTournamentsByTeam(initialText, afterCurrentDate: true);
+      futureTournamentList = fetchTournamentsByTeam(initialText, afterCurrentDate: false);
     });
   }
 }

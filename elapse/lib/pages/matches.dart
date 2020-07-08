@@ -237,7 +237,7 @@ class _GameListState extends State<GameList> {
   Widget elimsMarker(game) {
     var textVal = 'Match Type';
     if (game.instance == 1 && game.matchnum == 1) {
-      switch(game.round) {
+      switch (game.round) {
         case 1:
           textVal = 'Practice';
           break;
@@ -257,7 +257,10 @@ class _GameListState extends State<GameList> {
           textVal = 'Round of 16';
           break;
         default:
-          return Container(height: 0, width: 0,);
+          return Container(
+            height: 0,
+            width: 0,
+          );
       }
       return Column(
         children: [
@@ -271,10 +274,26 @@ class _GameListState extends State<GameList> {
           ),
         ],
       );
+    } else {
+      return Container(
+        height: 0,
+        width: 0,
+      );
     }
-    else{
-      return Container(height: 0, width: 0,);
-    }
+  }
+
+  Widget noMatchSelected() {
+      return Container(
+        padding: EdgeInsets.all(20),
+        height: 450,
+        child: Center(
+            child: Text(
+          "No data found! Change the event code, or this event doesn't exist!",
+          style: TextStyle(
+              fontStyle: FontStyle.italic, color: Colors.black54, fontSize: 20),
+          textAlign: TextAlign.center,
+        )),
+      );
   }
 
   Widget gameTemplate(game) {
@@ -393,14 +412,21 @@ class _GameListState extends State<GameList> {
                   ));
                 } else if (snapshot.hasError) {
                   print('error');
-                  return Text("${snapshot.error}");
+                  matchListSliver = SliverToBoxAdapter(
+                    child: Center(
+                      child: noMatchSelected(),
+                    ),
+                  );
                 } else {
                   print('loading');
                   // By default, show a loading spinner.
-                  matchListSliver = SliverFillRemaining(
+                    matchListSliver = SliverToBoxAdapter(
+                        child: Container(
+                      height: 150,
                       child: Center(
-                    child: Container(child: CircularProgressIndicator()),
-                  ));
+                        child: Container(child: CircularProgressIndicator()),
+                      ),
+                    ));
                 }
 
                 final textSliver = SliverToBoxAdapter(
@@ -409,12 +435,17 @@ class _GameListState extends State<GameList> {
                   ),
                 );
 
+                final bottomPaddingSliver = SliverToBoxAdapter(
+                  child: Container(height: 30),
+                );
+
                 return RefreshIndicator(
                   child: CustomScrollView(
                     slivers: <Widget>[
                       appBarSliver,
                       textSliver,
                       matchListSliver,
+                      bottomPaddingSliver
                     ],
                   ),
                   onRefresh: _getData,
