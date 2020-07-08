@@ -73,6 +73,8 @@ Future<List<Match>> fetchMatches(String sku) async {
   await http.get('https://api.vexdb.io/v1/get_matches?sku=$sku');
   Map<String, dynamic> matchRawJson = json.decode(matchResponse.body);
 
+
+
   List<dynamic> tempMatchList;
   List<Match> matchList = [];
 
@@ -80,9 +82,11 @@ Future<List<Match>> fetchMatches(String sku) async {
     tempMatchList = matchRawJson['result'];
 
     if (matchRawJson['size'] == 0) {
-      print('error');
+      print('no data');
+      throw Exception('No Data');
     }
     else {
+      print('data available');
       for (int i = 0; i < matchRawJson['size']; i += 1) {
         //print(tempMatchList[i]);
         matchList.add(Match.fromJson(tempMatchList[i]));
