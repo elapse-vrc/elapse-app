@@ -79,12 +79,18 @@ Future<List<Match>> fetchMatches(String sku) async {
   if (matchResponse.statusCode == 200) {
     tempMatchList = matchRawJson['result'];
 
-    for (int i = 0; i < matchRawJson['size']; i += 1) {
-      //print(tempMatchList[i]);
-      matchList.add(Match.fromJson(tempMatchList[i]));
+    if (matchRawJson['size'] == 0) {
+      print('error');
     }
-    //print(matchList);
-    return (matchList);
+    else {
+      for (int i = 0; i < matchRawJson['size']; i += 1) {
+        //print(tempMatchList[i]);
+        matchList.add(Match.fromJson(tempMatchList[i]));
+      }
+      //print(matchList);
+      return (matchList);
+    }
+
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.

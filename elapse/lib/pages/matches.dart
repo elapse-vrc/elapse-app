@@ -393,7 +393,7 @@ class _GameListState extends State<GameList> {
                   ));
                 } else if (snapshot.hasError) {
                   print('error');
-                  return Text("${snapshot.error}");
+                  return Text("No data!");
                 } else {
                   print('loading');
                   // By default, show a loading spinner.
