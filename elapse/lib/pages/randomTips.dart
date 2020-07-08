@@ -3,7 +3,7 @@ import 'dart:math';
 selectRandomTip() {
   Random rnd;
   int min = 0;
-  int max = 20;
+  int max = 30;
   rnd = new Random();
   int r = min + rnd.nextInt(max - min);
 
@@ -68,6 +68,36 @@ selectRandomTip() {
     return "lol imagine doing VEX";
   }
   else if(r == 20) {
-    return "dang writing these tips are boring";
+    return "Make a good strategy to win the game!";
+  }
+  else if(r == 21) {
+    return "Give the skills challenge a try!";
+  }
+  else if(r == 22) {
+    return "Make sure to bring extra batteries!";
+  }
+  else if(r == 23) {
+    return "Keep an extra battery in your pocket, just in case";
+  }
+  else if(r == 24) {
+    return "We hope your team has a great season!";
+  }
+  else if(r == 25) {
+    return "Try to memorize the main rules in the game manual";
+  }
+  else if(r == 26) {
+    return "Give PROS V5 a try, it's more powerful for coding!";
+  }
+  else if(r == 27) {
+    return "Remember to select your code at the start of the match, to avoid delays.";
+  }
+  else if(r == 28) {
+    return "Not ready for a match in eliminations? Use a *timeout*, which delays the match by 3 minutes, giving you time to get ready!";
+  }
+  else if(r == 29) {
+    return "Try not to get DQ'ed!";
+  }
+  else if(r == 30) {
+    return "Remember, trapping your opponent is against the rules!";
   }
 }
