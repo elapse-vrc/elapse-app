@@ -10,6 +10,7 @@ import 'dart:math';
 bool _isEditingText = false;
 TextEditingController _editingController;
 String initialText = "00000A";
+int getDataType = 1;
 
 /*class HomePage extends StatelessWidget {
   const HomePage({Key key}) : super(key: key);
@@ -53,7 +54,7 @@ class _HomePageState extends State<HomePage> {
       }
       _editingController.text = initialText;
     });
-    futureTournamentList = fetchTournamentsByTeam(initialText, afterCurrentDate: true);
+    futureTournamentList = fetchTournamentsByTeam(initialText, dataType: getDataType);
   }
 
   @override
@@ -61,7 +62,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _editingController = TextEditingController(text: initialText);
     _getTeam();
-    _updateTournamentList(initialText);
+    _updateTournamentList(initialText, 1);
   }
 
   @override
@@ -70,12 +71,13 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  _updateTournamentList(val) async { // When new team is written, update initialText and write to disk
+  _updateTournamentList(val, type) async { // When new team is written, update initialText and write to disk
+    getDataType = type;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       initialText = val.toUpperCase(); // Convert 000a to 000A for consistency
       _isEditingText = false;
-      _getData();
+      _getData(type: type);
     });
     await prefs.setString('team', initialText);
   }
@@ -85,7 +87,7 @@ class _HomePageState extends State<HomePage> {
       return TextField(
         maxLength: 10, // There's no teams that have more than 6 characters, but I had to be safe.
         maxLengthEnforced: true,
-        onSubmitted: (newValue){_updateTournamentList(newValue);},
+        onSubmitted: (newValue){_updateTournamentList(newValue, 1);},
         autofocus: true,
         controller: _editingController,
       );
@@ -122,8 +124,12 @@ class _HomePageState extends State<HomePage> {
     print(tournamentDate.toIso8601String());
 
     final difference = tournamentDate.difference(now).inDays;
-
-    return difference.toString() + " days away";
+    if (difference < 1){
+      return (-difference).toString() + " days ago";
+    }
+    else {
+      return difference.toString() + " days away";
+    }
   }
 
   Widget tTemplate(tournamentList, index) {
@@ -323,9 +329,9 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<void> _getData() async {
+  Future<void> _getData({type:1}) async {
     setState(() {
-      futureTournamentList = fetchTournamentsByTeam(initialText, afterCurrentDate: false);
+      futureTournamentList = fetchTournamentsByTeam(initialText, dataType: type);
     });
   }
 }
