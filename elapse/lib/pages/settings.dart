@@ -5,6 +5,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:elapse/strings.dart';
+import 'package:elapse/pages/credits.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key key}) : super(key: key);
@@ -19,7 +20,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget appIcon() {
-    return Container(width: 30, height: 30, child: Image(image: AssetImage('include/drawable/images/smallelapse.png')));
+    return Container(width: 30, height: 30, alignment: Alignment.center, child: Image(image: AssetImage('include/drawable/images/smallelapse.png')));
   }
 
   Widget divider() {
@@ -126,7 +127,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           ListTile(
                             title: Text('Credits'),
                             trailing: Icon(Icons.insert_emoticon),
-                            onTap: () {},
+                            onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => CreditsPage()));},
                           ),
                           divider(),
                           ListTile(
@@ -138,7 +139,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           ListTile(
                             title: Text('More Info'),
                             trailing: Icon(Icons.info),
-                            onTap: () => showAboutDialog(context: context, applicationVersion: '1.0.0', applicationName: 'Elapse', applicationLegalese: 'Elapse is an app for the VEX Robotics Competition.', applicationIcon: appIcon()),
+                            onTap: () => showAboutDialog(context: context, applicationVersion: '0.0.3', applicationName: 'Elapse', applicationLegalese: 'Elapse is an app for the VEX Robotics Competition.', applicationIcon: appIcon()),
                           ),
                           Container(
                             height: 20,

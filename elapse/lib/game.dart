@@ -25,7 +25,7 @@ Future<Tournament> fetchTournament(String sku) async {
 }
 
 
-Future<List<Tournament>> fetchTournamentsByTeam(String team, {bool afterCurrentDate = false, int responses:99999999}) async {
+Future<List<Tournament>> fetchTournamentsByTeam(String team, {int dataType:1, int responses:99999999}) async {
 
   String rAmount = responses.toString();
   final response =
@@ -41,22 +41,38 @@ Future<List<Tournament>> fetchTournamentsByTeam(String team, {bool afterCurrentD
     log('internal match list made');
     if (response.statusCode == 200) {
       tempTList = tRawJson['result'];
-
-      for (int i = 0; i < tRawJson['size']; i += 1) {
-        //print(tempTList[i]['sku']);
-        var tDate = DateTime.parse(tempTList[i]['start']);
-        if (afterCurrentDate) {
-          if (tDate
-              .difference(DateTime.now())
-              .inDays > -1) {
+      for (int j = 0; j < 3; j += 1) {
+        for (int i = 0; i < tRawJson['size']; i += 1) {
+          //print(tempTList[i]['sku']);
+          var tDate = DateTime.parse(tempTList[i]['start']);
+          if (dataType == 1) {
+            if (tDate
+                .difference(DateTime.now())
+                .inDays > -1) {
+              tList.add(Tournament.fromJson(tempTList[i]));
+            }
+          } else if (dataType == 2) {
+            if (tDate
+                .difference(DateTime.now())
+                .inDays < 1) {
+              tList.add(Tournament.fromJson(tempTList[i]));
+            }
+          }
+          else {
             tList.add(Tournament.fromJson(tempTList[i]));
           }
         }
+        if (tList.isNotEmpty) {
+          tList = dataType == 1
+              ? tList.reversed.toList()
+              : tList; // Reverse the list to make it from day up
+          break;
+        }
         else {
-          tList.add(Tournament.fromJson(tempTList[i]));
+          print('switch');
+          dataType = 2;
         }
       }
-      tList = afterCurrentDate && tList.isNotEmpty ? tList.reversed.toList() : tList; // Reverse the list to make it from day up
       return (tList);
     } else {
       // If the server did not return a 200 OK response,
@@ -73,18 +89,28 @@ Future<List<Match>> fetchMatches(String sku) async {
   await http.get('https://api.vexdb.io/v1/get_matches?sku=$sku');
   Map<String, dynamic> matchRawJson = json.decode(matchResponse.body);
 
+
+
   List<dynamic> tempMatchList;
   List<Match> matchList = [];
 
   if (matchResponse.statusCode == 200) {
     tempMatchList = matchRawJson['result'];
 
-    for (int i = 0; i < matchRawJson['size']; i += 1) {
-      //print(tempMatchList[i]);
-      matchList.add(Match.fromJson(tempMatchList[i]));
+    if (matchRawJson['size'] == 0) {
+      print('no data');
+      throw Exception('No Data');
     }
-    //print(matchList);
-    return (matchList);
+    else {
+      print('data available');
+      for (int i = 0; i < matchRawJson['size']; i += 1) {
+        //print(tempMatchList[i]);
+        matchList.add(Match.fromJson(tempMatchList[i]));
+      }
+      //print(matchList);
+      return (matchList);
+    }
+
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.

@@ -3,13 +3,13 @@
   <component name="FacetManager">
     <facet type="android" name="Android">
       <configuration>
-        <option name="GEN_FOLDER_RELATIVE_PATH_APT" value="/../../elapse/gen" />
-        <option name="GEN_FOLDER_RELATIVE_PATH_AIDL" value="/../../elapse/gen" />
-        <option name="MANIFEST_FILE_RELATIVE_PATH" value="/../../elapse/AndroidManifest.xml" />
-        <option name="RES_FOLDER_RELATIVE_PATH" value="/../../elapse/res" />
-        <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/../../elapse/assets" />
-        <option name="LIBS_FOLDER_RELATIVE_PATH" value="/../../elapse/libs" />
-        <option name="PROGUARD_LOGS_FOLDER_RELATIVE_PATH" value="/../../elapse/proguard_logs" />
+        <option name="GEN_FOLDER_RELATIVE_PATH_APT" value="/../../elapse-app/gen" />
+        <option name="GEN_FOLDER_RELATIVE_PATH_AIDL" value="/../../elapse-app/gen" />
+        <option name="MANIFEST_FILE_RELATIVE_PATH" value="/../../elapse-app/AndroidManifest.xml" />
+        <option name="RES_FOLDER_RELATIVE_PATH" value="/../../elapse-app/res" />
+        <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/../../elapse-app/assets" />
+        <option name="LIBS_FOLDER_RELATIVE_PATH" value="/../../elapse-app/libs" />
+        <option name="PROGUARD_LOGS_FOLDER_RELATIVE_PATH" value="/../../elapse-app/proguard_logs" />
       </configuration>
     </facet>
   </component>

@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:elapse/game.dart';
 import 'dart:developer';
 import 'package:marquee/marquee.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+bool _isEditingText = false;
+TextEditingController _editingController;
+String initialText = "RE-VRC-00-0000";
 
 void main() {
   runApp(MaterialApp(home: GameList()));
@@ -54,18 +58,17 @@ class _GameListState extends State<GameList> {
           ),
         ],
       );
-    }
-    else {
+    } else {
       return Marquee(
-              text: game.field,
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
-              scrollAxis: Axis.horizontal,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              velocity: 10,
-              blankSpace: 25.0,
-              pauseAfterRound: Duration(seconds: 1),
-              accelerationDuration: Duration(seconds: 1),
-              decelerationDuration: Duration(seconds: 1),
+        text: game.field,
+        style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+        scrollAxis: Axis.horizontal,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        velocity: 10,
+        blankSpace: 25.0,
+        pauseAfterRound: Duration(seconds: 1),
+        accelerationDuration: Duration(seconds: 1),
+        decelerationDuration: Duration(seconds: 1),
       );
     }
   }
@@ -74,14 +77,9 @@ class _GameListState extends State<GameList> {
     //Changes the score to show field and time if match hasnt been played yet
     if (game.redscore == 0 && game.bluescore == 0) {
       return Row(children: <Widget>[
-        Container(
-          width: 60,
-          height: 30,
-          child: marqueeMaker(game)
-        ),
+        Container(width: 60, height: 30, child: marqueeMaker(game)),
         Spacer(flex: 1),
         Container(
-
           width: 45,
           child: Text(
             game.scheduled.toString().substring(11, 16),
@@ -144,6 +142,160 @@ class _GameListState extends State<GameList> {
     }
   }
 
+  void _getSku() async {
+    // Get currently selected teams
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      if (prefs.get('sku') == null) {
+        initialText = 'RE-VRC-00-0000';
+      } else {
+        initialText = prefs.get('sku');
+      }
+      _editingController.text = initialText;
+    });
+    futureMatchList = fetchMatches(initialText);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _editingController = TextEditingController(text: initialText);
+    _getSku();
+    //futureMatchList = fetchMatches(initialText);
+  }
+
+  @override
+  void dispose() {
+    // Dispose of the editing controller when main widget is disposed
+    _editingController.dispose();
+    super.dispose();
+  }
+
+  _newTeamWritten(val) async {
+    // When new team is written, update initialText and write to disk
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      initialText = val.toUpperCase(); // Convert 000a to 000A for consistency
+      _isEditingText = false;
+      _getData();
+    });
+    await prefs.setString('sku', initialText);
+  }
+
+  Widget _editTitleTextField() {
+    // Text field to be able to write to. Using TextField instead of EditableText because of autofocus. May change in the future.
+    if (_isEditingText)
+      return TextField(
+        maxLength:
+            14, // There's no teams that have more than 6 characters, but I had to be safe.
+        maxLengthEnforced: true,
+        onSubmitted: (newValue) {
+          _newTeamWritten(newValue);
+        },
+        autofocus: true,
+        controller: _editingController,
+      );
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _isEditingText = true;
+        });
+      },
+      child: Container(
+        width: 200,
+        height: 25,
+        child: Row(
+          children: <Widget>[
+            Text(
+              initialText.toString(),
+              overflow: TextOverflow.fade,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
+            ),
+            Align(
+                alignment: Alignment.centerLeft,
+                child: Icon(
+                  Icons.edit,
+                  size: 15.0,
+                )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget textEdit() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0),
+      child: Row(
+        children: <Widget>[
+          Flexible(child: _editTitleTextField()),
+        ],
+      ),
+    );
+  }
+
+  Widget elimsMarker(game) {
+    var textVal = 'Match Type';
+    if (game.instance == 1 && game.matchnum == 1) {
+      switch (game.round) {
+        case 1:
+          textVal = 'Practice';
+          break;
+        case 2:
+          textVal = 'Qualifications';
+          break;
+        case 3:
+          textVal = 'Quarterfinals';
+          break;
+        case 4:
+          textVal = 'Semifinals';
+          break;
+        case 5:
+          textVal = 'Finals';
+          break;
+        case 6:
+          textVal = 'Round of 16';
+          break;
+        default:
+          return Container(
+            height: 0,
+            width: 0,
+          );
+      }
+      return Column(
+        children: [
+          Center(child: Text(textVal)),
+          Divider(
+            color: const Color(0xE6E6E6FF),
+            height: 20,
+            thickness: 1,
+            indent: 20,
+            endIndent: 20,
+          ),
+        ],
+      );
+    } else {
+      return Container(
+        height: 0,
+        width: 0,
+      );
+    }
+  }
+
+  Widget noMatchSelected() {
+      return Container(
+        padding: EdgeInsets.all(20),
+        height: 450,
+        child: Center(
+            child: Text(
+          "No data found! Change the event code, or this event doesn't exist!",
+          style: TextStyle(
+              fontStyle: FontStyle.italic, color: Colors.black54, fontSize: 20),
+          textAlign: TextAlign.center,
+        )),
+      );
+  }
+
   Widget gameTemplate(game) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -151,6 +303,7 @@ class _GameListState extends State<GameList> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           matchDivider(game),
+          elimsMarker(game),
           DefaultTextStyle(
             child: Row(
               children: <Widget>[
@@ -158,13 +311,16 @@ class _GameListState extends State<GameList> {
                   padding: const EdgeInsets.only(right: 5.0),
                   child: Container(
                     width: 20,
-                    child: Text(matchType(game), style: TextStyle(fontSize: 16), textAlign: TextAlign.right,),
+                    child: Text(
+                      matchType(game),
+                      style: TextStyle(fontSize: 16),
+                      textAlign: TextAlign.right,
+                    ),
                   ),
                 ),
                 Container(
                   width: 70,
-                  child: Text(
-                      instanceModifier(game) + game.matchnum.toString(),
+                  child: Text(instanceModifier(game) + game.matchnum.toString(),
                       style: TextStyle(fontSize: 25)),
                 ),
                 Spacer(flex: 3),
@@ -209,12 +365,6 @@ class _GameListState extends State<GameList> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    futureMatchList = fetchMatches('RE-VRC-19-8481');
-  }
-
-  @override
   Widget build(BuildContext context) {
     // https://stackoverflow.com/questions/52146850/how-to-use-futurebuilder-inside-sliverlist
     final appBarSliver = SliverAppBar(
@@ -243,6 +393,8 @@ class _GameListState extends State<GameList> {
         color: const Color.fromARGB(255, 245, 250, 249),
         child: SafeArea(
           child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            resizeToAvoidBottomPadding: false,
             backgroundColor: const Color.fromARGB(255, 245, 250, 249),
             body: FutureBuilder<List<Match>>(
               future: futureMatchList,
@@ -260,18 +412,41 @@ class _GameListState extends State<GameList> {
                   ));
                 } else if (snapshot.hasError) {
                   print('error');
-                  return Text("${snapshot.error}");
+                  matchListSliver = SliverToBoxAdapter(
+                    child: Center(
+                      child: noMatchSelected(),
+                    ),
+                  );
                 } else {
                   print('loading');
                   // By default, show a loading spinner.
-                  matchListSliver = SliverFillRemaining(
+                    matchListSliver = SliverToBoxAdapter(
+                        child: Container(
+                      height: 150,
                       child: Center(
-                    child: Container(child: CircularProgressIndicator()),
-                  ));
+                        child: Container(child: CircularProgressIndicator()),
+                      ),
+                    ));
                 }
+
+                final textSliver = SliverToBoxAdapter(
+                  child: Container(
+                    child: textEdit(),
+                  ),
+                );
+
+                final bottomPaddingSliver = SliverToBoxAdapter(
+                  child: Container(height: 30),
+                );
+
                 return RefreshIndicator(
                   child: CustomScrollView(
-                    slivers: <Widget>[appBarSliver, matchListSliver],
+                    slivers: <Widget>[
+                      appBarSliver,
+                      textSliver,
+                      matchListSliver,
+                      bottomPaddingSliver
+                    ],
                   ),
                   onRefresh: _getData,
                 );
@@ -285,7 +460,7 @@ class _GameListState extends State<GameList> {
 
   Future<void> _getData() async {
     setState(() {
-      futureMatchList = fetchMatches('RE-VRC-19-8481');
+      futureMatchList = fetchMatches(initialText);
 
       //show a snackbar to show that loading new matches is complete
       final reloadSnackBar = SnackBar(content: Text('Refreshed matches list'));
