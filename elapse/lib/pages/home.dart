@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:elapse/game.dart';
 import 'package:elapse/pages/randomTips.dart';
 import 'dart:math';
+import 'package:elapse/gameRoboEvent.dart' as gre;
 
 bool _isEditingText = false;
 TextEditingController _editingController;
@@ -63,6 +64,7 @@ class _HomePageState extends State<HomePage> {
     _editingController = TextEditingController(text: initialText);
     _getTeam();
     _updateTournamentList(initialText, 1);
+    gre.testFunc();
   }
 
   @override
@@ -242,7 +244,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Match Screen',
+      title: 'Home Screen',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
