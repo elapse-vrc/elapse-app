@@ -1,9 +1,24 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:ffi';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:developer';
 import 'package:html/parser.dart';
+
+
+var BEARER = "";
+var COOKIE = "";
+var EXPIRES = DateTime.now();
+
+ setCookie(String cookie, expires) {
+  EXPIRES = expires;
+  return (COOKIE = cookie);
+}
+
+ok() {
+   return COOKIE?? && EXPIRES.isAfter(DateTime.now());
+}
 
 
 Future<Tournament> fetchTournament(String sku) async {
