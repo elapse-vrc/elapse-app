@@ -7,9 +7,6 @@ import 'dart:developer';
 import 'package:html/parser.dart';
 
 
-var BEARER = "";
-//var COOKIE = "";
-var EXPIRES = DateTime.now();
 
  /* setCookie(String cookie, expires) {
   EXPIRES = expires;
