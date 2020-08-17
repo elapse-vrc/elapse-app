@@ -8,17 +8,17 @@ import 'package:html/parser.dart';
 
 
 var BEARER = "";
-var COOKIE = "";
+//var COOKIE = "";
 var EXPIRES = DateTime.now();
 
- setCookie(String cookie, expires) {
+ /* setCookie(String cookie, expires) {
   EXPIRES = expires;
   return (COOKIE = cookie);
-}
+} */
 
-ok() {
+/* ok() {
    return COOKIE?? && EXPIRES.isAfter(DateTime.now());
-}
+} */
 
 
 Future<Tournament> fetchTournament(String sku) async {
@@ -119,10 +119,11 @@ Future<List<dynamic>> getCsrfTokenAndCookie () async {
 
   if (response.statusCode == 200) {
     final csrfToken = body.getElementsByTagName('meta')[3].attributes['content']; // Extract csrf-token from all meta tags and store content attribute
-    final cookie = response.headers['set-cookie'].split(',').map((cookie) => cookie.substring(0, cookie.indexOf(';') + 1)).join(' ');
+    final COOKIE = response.headers['set-cookie'].split(',').map((cookie) => cookie.substring(0, cookie.indexOf(';') + 1)).join(' ');
     print(csrfToken);
-    print(cookie);
-    return [csrfToken, cookie];
+    print('separator');
+    print(COOKIE);
+    return [csrfToken, COOKIE];
   } else {
     throw Exception();
   }
@@ -131,13 +132,12 @@ Future<List<dynamic>> getCsrfTokenAndCookie () async {
 Future<List<Tournament>> testFunc () async {
   final cookieandtoken = await getCsrfTokenAndCookie();
   final csrfToken = cookieandtoken[0];
-  final cookie = cookieandtoken[1];
+  final COOKIE = cookieandtoken[1];
 
   final response = await http.Client().get(
       'https://www.robotevents.com/api/v2/events',
     headers: {
-        'origin': 'https://www.robotevents.com',
-        'x-csrf-token': csrfToken,
+        'cookie': COOKIE,
       }
   );
   print(response.body);
